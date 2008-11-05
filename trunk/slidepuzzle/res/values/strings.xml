@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Slide Puzzle</string>    
+    
+    <!-- SlidePuzzleActivity -->    
+    <string name="menu_new">New Game</string>
+    <string name="menu_scores">High Scores</string>
+    <string name="menu_settings">Settings</string>
+    <string name="new_high_score">New high score!</string>
+
+    <!-- HighScoreListActivity -->
+    <string name="scores_title">High Scores</string>
+    <string name="size_header">Size</string>
+    <string name="time_header">Time</string>
+    <string name="menu_clear">Reset scores</string>
+    <string name="delete_dialog_title">Reset</string>
+    <string name="delete_dialog_msg">All scores will be lost.</string>
+    <string name="dialog_yes">OK</string>
+    <string name="dialog_no">Cancel</string>
+    
+    <!-- PuzzlePreferenceActivity -->    
+    <string name="settings_title">Settings</string>
+    
+    <string name="pref_title_show_timer">Show timer</string>
+    <string name="pref_summary_show_timer">Display elapsed game time</string>
+    
+    <string name="pref_title_show_numbers">Show numbers</string>
+    <string name="pref_summary_show_numbers">Display number on tiles</string>
+    
+    <string name="pref_title_show_borders">Show borders</string>
+    <string name="pref_summary_show_borders">Display border around tiles</string>
+    
+    <string name="pref_title_blank_loc">Blank first</string>
+    <string name="pref_summary_blank_loc">If the blank tile should be first or last for new puzzles </string>
+    
+    <string name="pref_title_size">Size</string>
+    <string name="pref_summary_size">How large to make new puzzles</string>
+    <string name="pref_size_dialog_title">Select size</string>
+    
+    <string name="pref_title_show_image">Show image</string>
+    <string name="pref_summary_show_image">Create tiles from an image</string> 
+    
+    <string name="pref_title_image_source">Image</string>
+    <string name="pref_summary_image_source">Select source to create tiles from</string>        
+    <string name="pref_image_source_dialog_title">Select image</string>
+</resources>

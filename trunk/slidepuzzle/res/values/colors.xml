@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<resources>
+    <!-- TileView -->
+    <drawable name="tileview_bg">#ff000000</drawable>
+    <drawable name="number_color">#ffffffff</drawable>
+    <drawable name="outline_color">#ffffffff</drawable>
+</resources>
