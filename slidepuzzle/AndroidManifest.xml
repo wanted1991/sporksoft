@@ -17,6 +17,5 @@
             </intent-filter>
         </activity>
         <activity android:name=".PuzzlePreferenceActivity" android:label="@string/settings_title" android:launchMode="singleTop" />
-        <activity android:name=".HighScoreListActivity" android:label="@string/scores_title" android:launchMode="singleTop" />
     </application>
 </manifest> 

@@ -69,10 +69,7 @@ public class SelectImagePreference extends Preference {
     }
 
     @Override
-    protected void onClick() {
-        LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(
-                Context.LAYOUT_INFLATER_SERVICE);
-        
+    protected void onClick() {        
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         //builder.setIcon();
         builder.setTitle(R.string.pref_image_source_dialog_title);

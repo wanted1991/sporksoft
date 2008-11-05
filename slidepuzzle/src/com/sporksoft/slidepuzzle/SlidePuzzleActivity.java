@@ -1,11 +1,19 @@
 package com.sporksoft.slidepuzzle;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.DialogInterface.OnClickListener;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +23,8 @@ import android.view.View.OnKeyListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.Chronometer;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
 public class SlidePuzzleActivity extends Activity implements OnKeyListener {	
@@ -24,9 +34,34 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
 	
 	private TileView mTileView;
 	private Chronometer mTimerView;
-    private long mTime;
     private Toast mToast;
-    
+
+    private class ScoresListener implements OnClickListener {
+        public void onClick(DialogInterface dialog, int whichButton ) {
+            switch (whichButton) {
+                case AlertDialog.BUTTON1: {
+                    showConfirmDeleteDialog();
+                    return;
+                }
+                case AlertDialog.BUTTON2: {
+                    if (!mTileView.isSolved()) {
+                        mTimerView.start();
+                    }
+                    return;
+                }
+            }
+        }
+    }
+
+    private class ConfirmDeleteListener implements OnClickListener {
+        public void onClick(DialogInterface dialog, int whichButton ) {
+            if (whichButton == AlertDialog.BUTTON1) {
+                ScoreUtil.getInstance(SlidePuzzleActivity.this).clearScores();                
+            }
+            showHighScoreListDialog();
+        }
+    }
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle icicle) {
@@ -42,10 +77,8 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
         if (icicle == null) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             mTileView.newGame(null, prefs.getBoolean(PuzzlePreferenceActivity.BLANK_LOCATION, false), mTimerView);
-            mTime = 0;
         } else {
             mTileView.newGame((Tile[]) icicle.getParcelableArray("tiles"), icicle.getBoolean("blank_first"), mTimerView);
-            mTime = icicle.getLong("time", 0);
         }
     }
     
@@ -54,8 +87,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
     	super.onResume();
 
     	mTileView.updateInstantPrefs();
-        mTimerView.setBase(SystemClock.elapsedRealtime() - mTime);
-    	if (!mTileView.mSolved) {
+    	if (!mTileView.isSolved()) {
     	    mTimerView.start();
     	}
     }
@@ -64,15 +96,12 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
     public void onPause() {
         super.onPause();
 
-        if (!mTileView.mSolved) {
-            mTime = (SystemClock.elapsedRealtime() - mTimerView.getBase());
-        }
         mTimerView.stop();
     }
     
     public boolean onKey(View v, int keyCode, KeyEvent event) {
         // Prevent user from moving tiles if the puzzle has been solved 
-        if (mTileView.mSolved) {
+        if (mTileView.isSolved()) {
             return false;
         }
         
@@ -122,7 +151,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
 
     @Override public boolean onTouchEvent(MotionEvent event) {
         // Prevent user from moving tiles if the puzzle has been solved 
-        if (mTileView.mSolved) {
+        if (mTileView.isSolved()) {
             return false;
         }
 
@@ -171,15 +200,15 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
                 mTileView.newGame(null, prefs.getBoolean(PuzzlePreferenceActivity.BLANK_LOCATION, false), mTimerView);
                 
                 //reset timer
-                mTime = 0;
                 mTimerView.stop();
                 mTimerView.setBase(SystemClock.elapsedRealtime());
                 mTimerView.start();
                 break;
             }
             case MENU_SCORES: {
-                Intent intent = new Intent(this, HighScoreListActivity.class);
-                this.startActivity(intent);                
+                mTimerView.stop();
+
+                showHighScoreListDialog();
                 break;
             }
             case MENU_SETTINGS: {
@@ -198,6 +227,42 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
 
         outState.putParcelableArray("tiles", mTileView.getTiles());
         outState.putBoolean("blank_first", mTileView.mBlankFirst);
-        outState.putLong("time", mTime);
+    }
+        
+    private void showHighScoreListDialog() {
+        LinearLayout layout = (LinearLayout) getLayoutInflater().inflate(R.layout.high_score_list, null);
+        ListView listView = (ListView) layout.findViewById(R.id.score_list);
+        
+        long[] times = ScoreUtil.getInstance(this).getAllScores();
+        String[] sizes = getResources().getStringArray(R.array.pref_entries_size);
+        int len = sizes.length;
+        
+        ArrayList<ScoreItem> scores = new ArrayList<ScoreItem>();
+        for (int i = 0; i < len; i++) {
+            scores.add(new ScoreItem(sizes[i], times[i]));
+        }
+        listView.setAdapter(new HighScoreListAdapter(this, scores));
+        
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        //builder.setIcon();
+        builder.setTitle(R.string.scores_title);
+        builder.setCancelable(true);
+        builder.setView(layout);
+        //builder.setAdapter(new HighScoreListAdapter(this, scores), null);
+        builder.setPositiveButton(R.string.menu_clear, new ScoresListener());
+        builder.setNegativeButton(R.string.dialog_close, new ScoresListener());
+        builder.show();        
+    }
+    
+    private void showConfirmDeleteDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.delete_dialog_title);
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        builder.setCancelable(true);
+        builder.setPositiveButton(R.string.dialog_yes, new ConfirmDeleteListener());
+        builder.setNegativeButton(R.string.dialog_no, new ConfirmDeleteListener());
+        builder.setMessage(R.string.delete_dialog_msg);
+
+        builder.show();
     }
 }

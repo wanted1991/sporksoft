@@ -12,6 +12,7 @@
         android:textColor="#ffffff"
         android:background="#000000"
         android:format="Elapsed Time: %s"
+        android:saveEnabled="true"
         android:padding="5dip"/>
     
     <com.sporksoft.slidepuzzle.TileView  
