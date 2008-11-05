@@ -34,6 +34,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
 	
 	private TileView mTileView;
 	private Chronometer mTimerView;
+    private long mTime;
     private Toast mToast;
 
     private class ScoresListener implements OnClickListener {
@@ -44,6 +45,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
                     return;
                 }
                 case AlertDialog.BUTTON2: {
+                    mTimerView.setBase(SystemClock.elapsedRealtime() - mTime);
                     if (!mTileView.isSolved()) {
                         mTimerView.start();
                     }
@@ -77,8 +79,10 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
         if (icicle == null) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             mTileView.newGame(null, prefs.getBoolean(PuzzlePreferenceActivity.BLANK_LOCATION, false), mTimerView);
+            mTime = 0;
         } else {
             mTileView.newGame((Tile[]) icicle.getParcelableArray("tiles"), icicle.getBoolean("blank_first"), mTimerView);
+            mTime = icicle.getLong("time", 0);
         }
     }
     
@@ -87,6 +91,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
     	super.onResume();
 
     	mTileView.updateInstantPrefs();
+        mTimerView.setBase(SystemClock.elapsedRealtime() - mTime);
     	if (!mTileView.isSolved()) {
     	    mTimerView.start();
     	}
@@ -96,6 +101,9 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
     public void onPause() {
         super.onPause();
 
+        if (!mTileView.isSolved()) {
+            mTime = (SystemClock.elapsedRealtime() - mTimerView.getBase());
+        }
         mTimerView.stop();
     }
     
@@ -200,12 +208,16 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
                 mTileView.newGame(null, prefs.getBoolean(PuzzlePreferenceActivity.BLANK_LOCATION, false), mTimerView);
                 
                 //reset timer
+                mTime = 0;
                 mTimerView.stop();
                 mTimerView.setBase(SystemClock.elapsedRealtime());
                 mTimerView.start();
                 break;
             }
             case MENU_SCORES: {
+                if (!mTileView.isSolved()) {
+                    mTime = (SystemClock.elapsedRealtime() - mTimerView.getBase());
+                }
                 mTimerView.stop();
 
                 showHighScoreListDialog();
@@ -227,6 +239,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
 
         outState.putParcelableArray("tiles", mTileView.getTiles());
         outState.putBoolean("blank_first", mTileView.mBlankFirst);
+        outState.putLong("time", mTime);
     }
         
     private void showHighScoreListDialog() {
