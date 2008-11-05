@@ -57,7 +57,7 @@ public class TileView extends View {
 	Bitmap mDefaultBitmap;
 	
 	SharedPreferences mPrefs;
-	boolean mSolved;
+	private boolean mSolved;
 	boolean mBlankFirst;
 	
 	int mNumberColor;
@@ -570,7 +570,11 @@ public class TileView extends View {
         invalidate();
     }
     
+    public boolean isSolved() {
+        return mSolved;
+    }
+    
     public Tile[] getTiles() {
         return mTiles;
-    }    
+    }
 }
