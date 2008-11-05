@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+        
+    <Chronometer 
+        android:id="@+id/timer_view"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textColor="#ffffff"
+        android:background="#000000"
+        android:format="Elapsed Time: %s"
+        android:padding="5dip"/>
+    
+    <com.sporksoft.slidepuzzle.TileView  
+        android:id="@+id/tile_view"
+        android:layout_width="fill_parent" 
+        android:layout_height="fill_parent" 
+        android:background="@drawable/tileview_bg"
+    />
+</LinearLayout>
