@@ -364,7 +364,6 @@ public class TileView extends View {
     			}
     			break;
     	}
-    	invalidate();
     }
     
     private void update(int index) {
@@ -389,7 +388,12 @@ public class TileView extends View {
                         mMisplaced++;
                     }
                     --mEmptyIndex;
-                }		
+                }
+                
+                //Redraw the row
+                int h = (int)getTileHeight();
+                int tileY = h * (mEmptyIndex / mSize);
+                invalidate(getLeft(), tileY, getRight(), tileY + h);
     		}
     	} else if (index % mSize == mEmptyIndex % mSize){
     		//Moving a column
@@ -414,6 +418,11 @@ public class TileView extends View {
                     mEmptyIndex -= mSize;
                 }			
     		}
+
+            //Redraw the column
+    		int w = (int)getTileWidth();
+            int tileX =  w * (mEmptyIndex % mSize);
+            invalidate(tileX, 0, tileX + w, getBottom());
     	}    	
     }
     
@@ -426,8 +435,6 @@ public class TileView extends View {
         mY = y;
         mOffsetX = 0;
         mOffsetY = 0;
-        
-        invalidate();
         
         if (DEBUG) {
             Log.v(getClass().getName(), "Grab: " + mSelected + " at (" + x + ", " + y + ")");
@@ -444,16 +451,15 @@ public class TileView extends View {
     		update(mSelected);
     	}
     	
-    	invalidate();
     	mSelected = -1;
     }
     
     public void dragTile(float x, float y) {
-        if (mSelected == -1)
+        if (mSelected < 0)
     	    return;
         
-        float w = getTileWidth();
-        float h = getTileHeight();
+        int w = (int)getTileWidth();
+        int h = (int)getTileHeight();
                 
         //Only drag in a single plane, either x or y depending on location of empty cell
         //prevent tiles from being dragged onto other tiles
@@ -465,7 +471,11 @@ public class TileView extends View {
 	            } else if (Math.abs(mOffsetY) > h) {
 	            	mOffsetY = -h;
 	            }
-	            mY = y; 		
+	            mY = y;
+
+	            //Redraw the column
+	            int tileX = w * (mEmptyIndex % mSize);
+	            invalidate(tileX, 0, tileX + w, getBottom());
 	    	} else {
 	            mOffsetY += y - mY;
 	            if (mOffsetY < 0) {
@@ -473,7 +483,11 @@ public class TileView extends View {
 	            } else if (mOffsetY > h) {
 	            	mOffsetY = h;
 	            }
-	            mY = y; 	
+	            mY = y;
+
+	            //Redraw the column
+                int tileX = w * (mEmptyIndex % mSize);
+                invalidate(tileX, 0, tileX + w, getBottom());
     	} else if (mSelected / mSize == mEmptyIndex / mSize) {
 	    	if (mSelected > mEmptyIndex) {
 	            mOffsetX += x - mX;
@@ -482,7 +496,11 @@ public class TileView extends View {
 	            } else if (Math.abs(mOffsetX) > w) {
 	            	mOffsetX = -w;
 	            }
-	            mX = x;    		
+	            mX = x;
+
+	            //Redraw the row
+                int tileY = h * (mEmptyIndex / mSize);
+                invalidate(getLeft(), tileY, getRight(), tileY + h);
 	    	} else {
 	            mOffsetX += x - mX;
 	            if (mOffsetX < 0) {
@@ -490,11 +508,13 @@ public class TileView extends View {
 	            } else if (mOffsetX > w) {
 	            	mOffsetX = w;
 	            }
-	            mX = x;    		    		
+	            mX = x;
+
+                //Redraw the row	            
+                int tileY = h * (mEmptyIndex / mSize);
+                invalidate(getLeft(), tileY, getRight(), tileY + h);
 	    	}    	
-    	}
-        
-    	invalidate();
+    	}        
     }  
     
     public static Bitmap getImageFromUri(Context context, Uri uri, int width, int height) {
