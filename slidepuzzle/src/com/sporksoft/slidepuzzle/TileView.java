@@ -82,9 +82,7 @@ public class TileView extends View {
 	private void init() {
 	    setFocusable(true);
 	    Context context = getContext();
-	    mPrefs = PreferenceManager.getDefaultSharedPreferences(context);	    
-	    mNumberColor = context.getResources().getColor(R.drawable.number_color);
-	    mOutlineColor = context.getResources().getColor(R.drawable.outline_color);
+	    mPrefs = PreferenceManager.getDefaultSharedPreferences(context); 
 	    
 	    mPaint = new Paint();
         mPaint.setTextAlign(Paint.Align.CENTER);
@@ -96,6 +94,8 @@ public class TileView extends View {
 		//update the preferences which should have an immediate effect
 		mShowNumbers = mPrefs.getBoolean(PuzzlePreferenceActivity.SHOW_NUMBERS, true);
 		mShowOutlines = mPrefs.getBoolean(PuzzlePreferenceActivity.SHOW_BORDERS, true);
+        mNumberColor = mPrefs.getInt(PuzzlePreferenceActivity.NUMBER_COLOR, getResources().getColor(R.drawable.default_color));
+        mOutlineColor = mPrefs.getInt(PuzzlePreferenceActivity.BORDER_COLOR, getResources().getColor(R.drawable.default_color));
 	    mShowImage = mPrefs.getBoolean(PuzzlePreferenceActivity.SHOW_IMAGE, true);
 	    mImageSource = mPrefs.getInt(PuzzlePreferenceActivity.IMAGE_SOURCE, 0);
 	    
@@ -287,7 +287,6 @@ public class TileView extends View {
             
             // remove shadow layer for perfomance
             mPaint.setShadowLayer(0, 0, 0, 0);
-
         }
     }
             
