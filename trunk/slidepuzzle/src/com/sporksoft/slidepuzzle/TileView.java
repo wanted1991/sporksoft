@@ -390,10 +390,9 @@ public class TileView extends View {
                     --mEmptyIndex;
                 }
                 
-                //Redraw the row
                 int h = (int)getTileHeight();
                 int tileY = h * (mEmptyIndex / mSize);
-                invalidate(getLeft(), tileY, getRight(), tileY + h);
+                invalidate(0, tileY, getRight(), tileY + h);
     		}
     	} else if (index % mSize == mEmptyIndex % mSize){
     		//Moving a column
@@ -418,8 +417,7 @@ public class TileView extends View {
                     mEmptyIndex -= mSize;
                 }			
     		}
-
-            //Redraw the column
+    		
     		int w = (int)getTileWidth();
             int tileX =  w * (mEmptyIndex % mSize);
             invalidate(tileX, 0, tileX + w, getBottom());
@@ -472,8 +470,7 @@ public class TileView extends View {
 	            	mOffsetY = -h;
 	            }
 	            mY = y;
-
-	            //Redraw the column
+	            
 	            int tileX = w * (mEmptyIndex % mSize);
 	            invalidate(tileX, 0, tileX + w, getBottom());
 	    	} else {
@@ -485,7 +482,6 @@ public class TileView extends View {
 	            }
 	            mY = y;
 
-	            //Redraw the column
                 int tileX = w * (mEmptyIndex % mSize);
                 invalidate(tileX, 0, tileX + w, getBottom());
     	} else if (mSelected / mSize == mEmptyIndex / mSize) {
@@ -498,7 +494,6 @@ public class TileView extends View {
 	            }
 	            mX = x;
 
-	            //Redraw the row
                 int tileY = h * (mEmptyIndex / mSize);
                 invalidate(getLeft(), tileY, getRight(), tileY + h);
 	    	} else {
@@ -510,7 +505,6 @@ public class TileView extends View {
 	            }
 	            mX = x;
 
-                //Redraw the row	            
                 int tileY = h * (mEmptyIndex / mSize);
                 invalidate(getLeft(), tileY, getRight(), tileY + h);
 	    	}    	
