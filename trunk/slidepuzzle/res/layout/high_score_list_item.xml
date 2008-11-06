@@ -12,20 +12,12 @@
         <TextView android:id="@+id/solve_time"
             android:gravity="center"
             android:singleLine="true"
-            android:shadowColor="#ff000000"
-            android:shadowDx="2"
-            android:shadowDy="2"
-            android:shadowRadius="2"
             android:textColor="#ffffffff"            
             android:textSize="16sp"/>
             
         <TextView android:id="@+id/puzzle_size"
             android:gravity="center"
             android:singleLine="true"
-            android:shadowColor="#ff000000"
-            android:shadowDx="2"
-            android:shadowDy="2"
-            android:shadowRadius="2"
             android:textColor="#ffffffff"
             android:textSize="16sp"/>
     </TableRow>
