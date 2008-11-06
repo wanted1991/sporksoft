@@ -19,9 +19,12 @@
     <string name="dialog_yes">OK</string>
     <string name="dialog_no">Cancel</string>
     
-    <!-- PuzzlePreferenceActivity -->    
+    <!-- PuzzlePreferenceActivity -->
     <string name="settings_title">Settings</string>
-    
+    <string name="appearance_settings_title">Appearance</string>
+    <string name="mechanics_settings_title">Mechanics</string>
+    <string name="menu_restore_defaults">Restore default settings</string>
+
     <string name="pref_title_show_timer">Show timer</string>
     <string name="pref_summary_show_timer">Display elapsed game time</string>
     
@@ -44,4 +47,10 @@
     <string name="pref_title_image_source">Image</string>
     <string name="pref_summary_image_source">Select source to create tiles from</string>        
     <string name="pref_image_source_dialog_title">Select image</string>
+    
+    <string name="pref_title_border_color">Border color</string>
+    <string name="pref_summary_border_color">Select color for borders</string> 
+    
+    <string name="pref_title_number_color">Number color</string>
+    <string name="pref_summary_number_color">Select color for numbers</string> 
 </resources>

@@ -3,6 +3,5 @@
 <resources>
     <!-- TileView -->
     <drawable name="tileview_bg">#ff000000</drawable>
-    <drawable name="number_color">#ffffffff</drawable>
-    <drawable name="outline_color">#ffffffff</drawable>
+    <drawable name="default_color">#ffffffff</drawable>
 </resources>

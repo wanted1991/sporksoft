@@ -147,6 +147,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
     private void postScore() {
         long time = SystemClock.elapsedRealtime() - mTimerView.getBase();
         mTimerView.stop();
+        mTimerView.invalidate(); // make sure the actual final time is shown
         
         boolean isHighScore = ScoreUtil.getInstance(this).updateScores(time, mTileView.mSize);
         if (isHighScore) {
