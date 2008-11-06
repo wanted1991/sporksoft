@@ -366,6 +366,18 @@ public class TileView extends View {
     	}
     }
     
+    private void redrawRow() {
+        int h = (int)getTileHeight();
+        int tileY = h * (mEmptyIndex / mSize);
+        invalidate(0, tileY, getRight(), tileY + h);        
+    }
+    
+    private void redrawColumn() {
+        int w = (int)getTileWidth();
+        int tileX =  w * (mEmptyIndex % mSize);
+        invalidate(tileX, 0, tileX + w, getBottom());
+    }
+    
     private void update(int index) {
     	if (index / mSize == mEmptyIndex / mSize) {
         	//Moving a row
@@ -389,11 +401,8 @@ public class TileView extends View {
                     }
                     --mEmptyIndex;
                 }
-                
-                int h = (int)getTileHeight();
-                int tileY = h * (mEmptyIndex / mSize);
-                invalidate(0, tileY, getRight(), tileY + h);
     		}
+            redrawRow();
     	} else if (index % mSize == mEmptyIndex % mSize){
     		//Moving a column
     		if (mEmptyIndex < index) {
@@ -417,10 +426,7 @@ public class TileView extends View {
                     mEmptyIndex -= mSize;
                 }			
     		}
-    		
-    		int w = (int)getTileWidth();
-            int tileX =  w * (mEmptyIndex % mSize);
-            invalidate(tileX, 0, tileX + w, getBottom());
+            redrawColumn();
     	}    	
     }
     
@@ -447,8 +453,11 @@ public class TileView extends View {
     	if (mSelected != -1 && (Math.abs(mOffsetX) > getTileWidth()/2 ||
     			Math.abs(mOffsetY) > getTileHeight()/2)) {   
     		update(mSelected);
-    	}
-    	
+    	} else if (mSelected % mSize == mEmptyIndex % mSize) {
+            redrawColumn();
+        } else if (mSelected / mSize == mEmptyIndex / mSize) {
+            redrawRow();
+        }
     	mSelected = -1;
     }
     
@@ -470,7 +479,8 @@ public class TileView extends View {
 	            	mOffsetY = -h;
 	            }
 	            mY = y;
-	            
+
+	            // Redraw row	            
 	            int tileX = w * (mEmptyIndex % mSize);
 	            invalidate(tileX, 0, tileX + w, getBottom());
 	    	} else {
@@ -482,6 +492,7 @@ public class TileView extends View {
 	            }
 	            mY = y;
 
+                // Redraw row
                 int tileX = w * (mEmptyIndex % mSize);
                 invalidate(tileX, 0, tileX + w, getBottom());
     	} else if (mSelected / mSize == mEmptyIndex / mSize) {
@@ -494,6 +505,7 @@ public class TileView extends View {
 	            }
 	            mX = x;
 
+	            // Redraw row
                 int tileY = h * (mEmptyIndex / mSize);
                 invalidate(getLeft(), tileY, getRight(), tileY + h);
 	    	} else {
@@ -505,6 +517,7 @@ public class TileView extends View {
 	            }
 	            mX = x;
 
+	            // Redraw row	            
                 int tileY = h * (mEmptyIndex / mSize);
                 invalidate(getLeft(), tileY, getRight(), tileY + h);
 	    	}    	
