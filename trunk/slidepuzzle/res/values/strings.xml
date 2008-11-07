@@ -44,7 +44,7 @@
     <string name="pref_title_show_image">Show image</string>
     <string name="pref_summary_show_image">Create tiles from an image</string> 
     
-    <string name="pref_title_image_source">Image</string>
+    <string name="pref_title_image_source">Image source</string>
     <string name="pref_summary_image_source">Select source to create tiles from</string>        
     <string name="pref_image_source_dialog_title">Select image</string>
     
@@ -53,4 +53,11 @@
     
     <string name="pref_title_number_color">Number color</string>
     <string name="pref_summary_number_color">Select color for numbers</string> 
+
+    <string name="pref_title_timer_color">Timer color</string>
+    <string name="pref_summary_timer_color">Select color for timer</string> 
+
+    <string name="pref_title_bg_color">Background color</string>
+    <string name="pref_summary_bg_color">Select color for background</string> 
+
 </resources>

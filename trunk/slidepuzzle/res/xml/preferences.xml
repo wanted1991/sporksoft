@@ -1,15 +1,27 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
   <PreferenceCategory android:title="@string/appearance_settings_title">
+    <com.sporksoft.slidepuzzle.SelectColorPreference
+        android:defaultValue="@drawable/default_bg_color"
+        android:key="pref_key_bg_color"
+        android:title="@string/pref_title_bg_color"
+        android:summary="@string/pref_summary_bg_color"/>    
     <CheckBoxPreference android:defaultValue="true"
         android:key="pref_key_show_timer"
         android:summary="@string/pref_summary_show_timer"
         android:title="@string/pref_title_show_timer"/>
+    <com.sporksoft.slidepuzzle.SelectColorPreference
+        android:defaultValue="@drawable/default_fg_color"
+        android:layout="?android:attr/preferenceLayoutChild"
+        android:dependency="pref_key_show_timer"    
+        android:key="pref_key_timer_color"
+        android:title="@string/pref_title_timer_color"
+        android:summary="@string/pref_summary_timer_color"/>    
     <CheckBoxPreference android:defaultValue="true"
         android:key="pref_key_show_borders"
         android:summary="@string/pref_summary_show_borders"
         android:title="@string/pref_title_show_borders"/>
     <com.sporksoft.slidepuzzle.SelectColorPreference
-        android:defaultValue="@drawable/default_color"
+        android:defaultValue="@drawable/default_fg_color"
         android:layout="?android:attr/preferenceLayoutChild"
         android:dependency="pref_key_show_borders"    
         android:key="pref_key_border_color"
@@ -20,7 +32,7 @@
         android:summary="@string/pref_summary_show_numbers"
         android:title="@string/pref_title_show_numbers"/>
     <com.sporksoft.slidepuzzle.SelectColorPreference
-        android:defaultValue="@drawable/default_color"
+        android:defaultValue="@drawable/default_fg_color"
         android:layout="?android:attr/preferenceLayoutChild"
         android:dependency="pref_key_show_numbers"    
         android:key="pref_key_number_color"

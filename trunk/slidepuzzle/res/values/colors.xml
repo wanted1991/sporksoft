@@ -2,6 +2,6 @@
 
 <resources>
     <!-- TileView -->
-    <drawable name="tileview_bg">#ff000000</drawable>
-    <drawable name="default_color">#ffffffff</drawable>
+    <drawable name="default_bg_color">#ff000000</drawable>
+    <drawable name="default_fg_color">#ffffffff</drawable>
 </resources>
