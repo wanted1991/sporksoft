@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
+import android.content.DialogInterface.OnCancelListener;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.view.KeyEvent;
@@ -55,6 +56,15 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
         }
     }
 
+    private class ScoresCancelListener implements OnCancelListener {
+        public void onCancel(DialogInterface dialog) {
+            mTimerView.setBase(SystemClock.elapsedRealtime() - mTime);
+            if (!mTileView.isSolved()) {
+                mTimerView.start();
+            }        
+        }
+    }
+    
     private class ConfirmDeleteListener implements OnClickListener {
         public void onClick(DialogInterface dialog, int whichButton ) {
             if (whichButton == AlertDialog.BUTTON1) {
@@ -76,8 +86,10 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
         
         mTimerView = (Chronometer) findViewById(R.id.timer_view);
 
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mTimerView.setTextColor(prefs.getInt(PuzzlePreferenceActivity.TIMER_COLOR, getResources().getColor(R.drawable.default_fg_color)));
+                
         if (icicle == null) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             mTileView.newGame(null, prefs.getBoolean(PuzzlePreferenceActivity.BLANK_LOCATION, false), mTimerView);
             mTime = 0;
         } else {
@@ -145,11 +157,12 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
     }
 
     private void postScore() {
-        long time = SystemClock.elapsedRealtime() - mTimerView.getBase();
+        mTime = SystemClock.elapsedRealtime() - mTimerView.getBase();
         mTimerView.stop();
+        mTimerView.setBase(SystemClock.elapsedRealtime() - mTime);
         mTimerView.invalidate(); // make sure the actual final time is shown
         
-        boolean isHighScore = ScoreUtil.getInstance(this).updateScores(time, mTileView.mSize);
+        boolean isHighScore = ScoreUtil.getInstance(this).updateScores(mTime, mTileView.mSize);
         if (isHighScore) {
             mToast = Toast.makeText(this, R.string.new_high_score, Toast.LENGTH_SHORT);
             mToast.setGravity(Gravity.CENTER, 0, 0);
@@ -246,7 +259,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
     private void showHighScoreListDialog() {
         LinearLayout layout = (LinearLayout) getLayoutInflater().inflate(R.layout.high_score_list, null);
         ListView listView = (ListView) layout.findViewById(R.id.score_list);
-        
+        ScoresListener listener = new ScoresListener();
         long[] times = ScoreUtil.getInstance(this).getAllScores();
         String[] sizes = getResources().getStringArray(R.array.pref_entries_size);
         int len = sizes.length;
@@ -263,8 +276,9 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
         builder.setCancelable(true);
         builder.setView(layout);
         //builder.setAdapter(new HighScoreListAdapter(this, scores), null);
-        builder.setPositiveButton(R.string.menu_clear, new ScoresListener());
-        builder.setNegativeButton(R.string.dialog_close, new ScoresListener());
+        builder.setPositiveButton(R.string.menu_clear, listener);
+        builder.setNegativeButton(R.string.dialog_close, listener);
+        builder.setOnCancelListener(new ScoresCancelListener());
         builder.show();        
     }
     

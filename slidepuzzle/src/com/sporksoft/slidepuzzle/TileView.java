@@ -35,6 +35,8 @@ public class TileView extends View {
 	public static final int DIR_LEFT = 2;
 	public static final int DIR_RIGHT = 3;
 	
+	private static final int SHADOW_RADIUS = 1;
+	
 	//Offset of tile from top left corner of cell
 	float mOffsetX;
 	float mOffsetY;
@@ -92,12 +94,17 @@ public class TileView extends View {
 	
 	public void updateInstantPrefs() {		
 		//update the preferences which should have an immediate effect
+	    int bgColor = mPrefs.getInt(PuzzlePreferenceActivity.BACKGROUND_COLOR, getResources().getColor(R.drawable.default_bg_color));
+	    setBackgroundColor(bgColor);
+	    mTimer.setBackgroundColor(bgColor);
+	    
 		mShowNumbers = mPrefs.getBoolean(PuzzlePreferenceActivity.SHOW_NUMBERS, true);
 		mShowOutlines = mPrefs.getBoolean(PuzzlePreferenceActivity.SHOW_BORDERS, true);
-        mNumberColor = mPrefs.getInt(PuzzlePreferenceActivity.NUMBER_COLOR, getResources().getColor(R.drawable.default_color));
-        mOutlineColor = mPrefs.getInt(PuzzlePreferenceActivity.BORDER_COLOR, getResources().getColor(R.drawable.default_color));
+        mNumberColor = mPrefs.getInt(PuzzlePreferenceActivity.NUMBER_COLOR, getResources().getColor(R.drawable.default_fg_color));
+        mOutlineColor = mPrefs.getInt(PuzzlePreferenceActivity.BORDER_COLOR, getResources().getColor(R.drawable.default_fg_color));
 	    mShowImage = mPrefs.getBoolean(PuzzlePreferenceActivity.SHOW_IMAGE, true);
 	    mImageSource = mPrefs.getInt(PuzzlePreferenceActivity.IMAGE_SOURCE, 0);
+        mTimer.setTextColor(mPrefs.getInt(PuzzlePreferenceActivity.TIMER_COLOR, getResources().getColor(R.drawable.default_fg_color)));
 	    
 	    if (mPrefs.getBoolean(PuzzlePreferenceActivity.SHOW_TIMER, true)) {
 	        mTimer.setVisibility(View.VISIBLE);
@@ -263,7 +270,7 @@ public class TileView extends View {
             }
 			
 			//Drop shadow to make numbers and borders stand out
-            mPaint.setShadowLayer(1, 1, 1, 0xff000000);
+            mPaint.setShadowLayer(SHADOW_RADIUS, 1, 1, 0xff000000);
             
             //Draw the number
             if (mShowNumbers) {
@@ -368,13 +375,13 @@ public class TileView extends View {
     private void redrawRow() {
         int h = (int)getTileHeight();
         int tileY = h * (mEmptyIndex / mSize);
-        invalidate(0, tileY, getRight(), tileY + h);        
+        invalidate(0, tileY - SHADOW_RADIUS, getRight(), tileY + h + SHADOW_RADIUS);        
     }
     
     private void redrawColumn() {
         int w = (int)getTileWidth();
         int tileX =  w * (mEmptyIndex % mSize);
-        invalidate(tileX, 0, tileX + w, getBottom());
+        invalidate(tileX  - SHADOW_RADIUS, 0, tileX + w + SHADOW_RADIUS, getBottom());
     }
     
     private void update(int index) {
@@ -469,7 +476,7 @@ public class TileView extends View {
                 
         //Only drag in a single plane, either x or y depending on location of empty cell
         //prevent tiles from being dragged onto other tiles
-        if (mSelected % mSize == mEmptyIndex % mSize)
+        if (mSelected % mSize == mEmptyIndex % mSize) {
 	    	if (mSelected > mEmptyIndex) {
 	            mOffsetY += y - mY;
 	            if (mOffsetY > 0) {
@@ -479,9 +486,6 @@ public class TileView extends View {
 	            }
 	            mY = y;
 
-	            // Redraw row	            
-	            int tileX = w * (mEmptyIndex % mSize);
-	            invalidate(tileX, 0, tileX + w, getBottom());
 	    	} else {
 	            mOffsetY += y - mY;
 	            if (mOffsetY < 0) {
@@ -490,10 +494,8 @@ public class TileView extends View {
 	            	mOffsetY = h;
 	            }
 	            mY = y;
-
-                // Redraw row
-                int tileX = w * (mEmptyIndex % mSize);
-                invalidate(tileX, 0, tileX + w, getBottom());
+	    	}
+	    	redrawColumn();
     	} else if (mSelected / mSize == mEmptyIndex / mSize) {
 	    	if (mSelected > mEmptyIndex) {
 	            mOffsetX += x - mX;
@@ -503,10 +505,6 @@ public class TileView extends View {
 	            	mOffsetX = -w;
 	            }
 	            mX = x;
-
-	            // Redraw row
-                int tileY = h * (mEmptyIndex / mSize);
-                invalidate(getLeft(), tileY, getRight(), tileY + h);
 	    	} else {
 	            mOffsetX += x - mX;
 	            if (mOffsetX < 0) {
@@ -515,11 +513,8 @@ public class TileView extends View {
 	            	mOffsetX = w;
 	            }
 	            mX = x;
-
-	            // Redraw row	            
-                int tileY = h * (mEmptyIndex / mSize);
-                invalidate(getLeft(), tileY, getRight(), tileY + h);
-	    	}    	
+	    	}
+	    	redrawRow();
     	}        
     }  
     

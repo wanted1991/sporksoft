@@ -11,6 +11,10 @@
         android:textStyle="bold"
         android:textColor="#ffffff"
         android:background="#000000"
+        android:shadowColor="#000000"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="1"
         android:format="Elapsed Time: %s"
         android:saveEnabled="true"
         android:padding="5dip"/>
@@ -19,6 +23,6 @@
         android:id="@+id/tile_view"
         android:layout_width="fill_parent" 
         android:layout_height="fill_parent" 
-        android:background="@drawable/tileview_bg"
+        android:background="@drawable/default_bg_color"
     />
 </LinearLayout>
