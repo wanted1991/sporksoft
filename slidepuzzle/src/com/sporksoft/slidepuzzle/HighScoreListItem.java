@@ -38,23 +38,26 @@ public class HighScoreListItem extends TableLayout {
 	
 	private String formatTime(long time) {
 	    int seconds = (int) (time / 1000);
-	    int hours = seconds / 360;
-	    seconds %= 360;
+	    int hours = seconds / 3600;
+	    seconds %= 3600;
 	    int minutes = seconds / 60;
 	    seconds %= 60;
 	    
         StringBuffer t = new StringBuffer();
             
-        if(hours < 10)
+        if(hours < 10) {
             t.append('0');
+        }
         t.append(hours);
         t.append(':');
-        if(minutes < 10)
+        if(minutes < 10) {
             t.append('0');
+        }
         t.append(minutes);
         t.append(':');
-        if(seconds < 10)
+        if(seconds < 10) {
             t.append('0');
+        }
         t.append(seconds);
 	    
 	    return t.toString();
