@@ -219,6 +219,10 @@ public class TiledLayer extends Layer {
     // all elements of cellMatrix[][] 
     // are set to zero by new, so maintainIndices = true
         createStaticSet(image,  noOfFrames + 1, tileWidth, tileHeight, true);
+        
+        mPaint = new Paint();
+        mSrcRect = new Rect();
+        mDestRect = new Rect();
     }
 
     /**
@@ -621,11 +625,10 @@ public class TiledLayer extends Layer {
 //                 tx, ty,
 //                 Graphics.TOP | Graphics.LEFT);
 
-            c.drawBitmap(sourceImage, 
-                    new Rect(tileSetX[tileIndex], tileSetY[tileIndex], 
-                            tileSetX[tileIndex] + cellWidth, tileSetY[tileIndex] + cellHeight),
-                    new Rect(tx, ty, tx + cellWidth, ty + cellHeight), 
-                    new Paint());
+            mSrcRect.set(tileSetX[tileIndex], tileSetY[tileIndex], 
+                            tileSetX[tileIndex] + cellWidth, tileSetY[tileIndex] + cellHeight);
+            mDestRect.set(tx, ty, tx + cellWidth, ty + cellHeight);
+            c.drawBitmap(sourceImage, mSrcRect, mDestRect, mPaint);
                 }
             }
     }
@@ -756,5 +759,9 @@ public class TiledLayer extends Layer {
      * initialized to 1 when table is created.
      */
     private int numOfAnimTiles; // = 0
+    
+    private Paint mPaint;
+    private Rect mSrcRect;
+    private Rect mDestRect;
 
 }

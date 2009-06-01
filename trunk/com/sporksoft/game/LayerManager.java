@@ -300,7 +300,7 @@ public class LayerManager {
         throw new IllegalArgumentException();
     }
 
-    viewX = x;
+        viewX = x;
         viewY = y;
         viewWidth = width;
         viewHeight = height;
