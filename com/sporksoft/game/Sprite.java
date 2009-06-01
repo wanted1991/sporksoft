@@ -268,6 +268,8 @@ public class Sprite extends Layer
         setTransformImpl(TRANS_NONE);
         
         mPaint = new Paint();
+        mSrcRect = new Rect();
+        mDestRect = new Rect();
 
     }
 
@@ -641,13 +643,15 @@ public class Sprite extends Layer
                     c.rotate(270, x + dRefX, y + dRefY);
                     break;
             }
-            c.drawBitmap(sourceImage, 
-                    new Rect(frameCoordsX[frameSequence[sequenceIndex]], 
-                            frameCoordsY[frameSequence[sequenceIndex]], 
-                            frameCoordsX[frameSequence[sequenceIndex]] + srcFrameWidth,
-                            frameCoordsY[frameSequence[sequenceIndex]] + srcFrameHeight), 
-                    new Rect(x, y, x + srcFrameWidth, y + srcFrameHeight), 
-                    mPaint);
+
+            mSrcRect.set(frameCoordsX[frameSequence[sequenceIndex]], 
+                    frameCoordsY[frameSequence[sequenceIndex]], 
+                    frameCoordsX[frameSequence[sequenceIndex]] + srcFrameWidth,
+                    frameCoordsY[frameSequence[sequenceIndex]] + srcFrameHeight); 
+
+            mDestRect.set(x, y, x + srcFrameWidth, y + srcFrameHeight); 
+
+            c.drawBitmap(sourceImage, mSrcRect, mDestRect, mPaint);
             c.restore();
 
         }
@@ -2325,6 +2329,8 @@ public class Sprite extends Layer
     int t_collisionRectHeight;
 
     Paint mPaint;
+    Rect mSrcRect;
+    Rect mDestRect;
 }
 
 
