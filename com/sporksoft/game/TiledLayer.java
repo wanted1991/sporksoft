@@ -201,13 +201,17 @@ public class TiledLayer extends Layer {
         super(columns < 1 || tileWidth < 1 ? -1 : columns * tileWidth, 
              rows < 1 || tileHeight < 1 ? -1 : rows * tileHeight);
 
+        mPaint = new Paint();
+        mSrcRect = new Rect();
+        mDestRect = new Rect();
+
         // if img is null img.getWidth() will throw NullPointerException
         if (((image.getWidth() % tileWidth) != 0) || 
             ((image.getHeight() % tileHeight) != 0)) {
              throw new IllegalArgumentException();
-    }
+        }
         this.columns = columns;
-    this.rows = rows;
+        this.rows = rows;
 
         cellMatrix = new int[rows][columns];
 
@@ -216,13 +220,9 @@ public class TiledLayer extends Layer {
         // the zero th index is left empty for transparent tile
         // so it is passed in  createStaticSet as noOfFrames + 1
         // Also maintain static indices is true
-    // all elements of cellMatrix[][] 
-    // are set to zero by new, so maintainIndices = true
-        createStaticSet(image,  noOfFrames + 1, tileWidth, tileHeight, true);
-        
-        mPaint = new Paint();
-        mSrcRect = new Rect();
-        mDestRect = new Rect();
+        // all elements of cellMatrix[][] 
+        // are set to zero by new, so maintainIndices = true
+        createStaticSet(image,  noOfFrames + 1, tileWidth, tileHeight, true);        
     }
 
     /**
@@ -242,21 +242,22 @@ public class TiledLayer extends Layer {
     public int createAnimatedTile(int staticTileIndex) {
         // checks static tile 
         if (staticTileIndex < 0 || staticTileIndex >= numberOfTiles) { 
-        throw new IndexOutOfBoundsException();
-    }
+            throw new IndexOutOfBoundsException();
+        }
 
         if (anim_to_static == null) {
-        anim_to_static = new int[4];
-        numOfAnimTiles = 1;
+            anim_to_static = new int[4];
+            numOfAnimTiles = 1;
         } else if (numOfAnimTiles == anim_to_static.length) {
-        // grow anim_to_static table if needed 
-        int new_anim_tbl[] = new int[anim_to_static.length * 2];
-        System.arraycopy(anim_to_static, 0, 
-                         new_anim_tbl, 0, anim_to_static.length);
-        anim_to_static = new_anim_tbl;
-    }
-    anim_to_static[numOfAnimTiles] = staticTileIndex;
-    numOfAnimTiles++;
+            // grow anim_to_static table if needed 
+            int new_anim_tbl[] = new int[anim_to_static.length * 2];
+            System.arraycopy(anim_to_static, 0, 
+                             new_anim_tbl, 0, anim_to_static.length);
+            anim_to_static = new_anim_tbl;
+        }
+        anim_to_static[numOfAnimTiles] = staticTileIndex;
+        numOfAnimTiles++;
+        
         return (-(numOfAnimTiles - 1));
     }
 
@@ -276,17 +277,15 @@ public class TiledLayer extends Layer {
     public void setAnimatedTile(int animatedTileIndex, int staticTileIndex) {
         // checks static tile
         if (staticTileIndex < 0 || staticTileIndex >= numberOfTiles) {  
-        throw new IndexOutOfBoundsException();
-    }
-        // do animated tile index check
-    animatedTileIndex = - animatedTileIndex;
-    if (anim_to_static == null || animatedTileIndex <= 0 
-            || animatedTileIndex >= numOfAnimTiles) { 
-        throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
-
+        // do animated tile index check
+        animatedTileIndex = - animatedTileIndex;
+        if (anim_to_static == null || animatedTileIndex <= 0 
+            || animatedTileIndex >= numOfAnimTiles) { 
+            throw new IndexOutOfBoundsException();
+        }
         anim_to_static[animatedTileIndex] = staticTileIndex;
-
     }
 
     /**
@@ -305,7 +304,7 @@ public class TiledLayer extends Layer {
         animatedTileIndex = - animatedTileIndex;
         if (anim_to_static == null || animatedTileIndex <= 0 
                    || animatedTileIndex >= numOfAnimTiles) { 
-        throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
     
         return anim_to_static[animatedTileIndex];
