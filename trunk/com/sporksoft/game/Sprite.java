@@ -256,8 +256,11 @@ public class Sprite extends Layer
      */
 //    public Sprite(Image image) {
     public Sprite(Bitmap image) {
-
         super(image.getWidth(), image.getHeight());
+        
+        mPaint = new Paint();
+        mSrcRect = new Rect();
+        mDestRect = new Rect();
 
         initializeFrames(image, image.getWidth(), image.getHeight(), false);
 
@@ -265,12 +268,7 @@ public class Sprite extends Layer
         initCollisionRectBounds();
 
         // current transformation is TRANS_NONE
-        setTransformImpl(TRANS_NONE);
-        
-        mPaint = new Paint();
-        mSrcRect = new Rect();
-        mDestRect = new Rect();
-
+        setTransformImpl(TRANS_NONE);        
     }
 
     /**
@@ -309,6 +307,11 @@ public class Sprite extends Layer
     public Sprite(Bitmap image, int frameWidth, int frameHeight) {
 
         super(frameWidth, frameHeight);
+
+        mPaint = new Paint();
+        mSrcRect = new Rect();
+        mDestRect = new Rect();
+
         // if img is null img.getWidth() will throw NullPointerException
         if ((frameWidth < 1 || frameHeight < 1) ||
             ((image.getWidth() % frameWidth) != 0) ||
@@ -325,8 +328,7 @@ public class Sprite extends Layer
         initCollisionRectBounds();
 
         // current transformation is TRANS_NONE
-        setTransformImpl(TRANS_NONE);
-
+        setTransformImpl(TRANS_NONE);        
     }
 
     /**
@@ -955,26 +957,26 @@ public class Sprite extends Layer
         if (!(s.visible && this.visible)) {
             return false;
         }
-
+    
         // these are package private 
         // and can be accessed directly
         int otherLeft    = s.x + s.t_collisionRectX;
         int otherTop     = s.y + s.t_collisionRectY;
         int otherRight   = otherLeft + s.t_collisionRectWidth;
         int otherBottom  = otherTop  + s.t_collisionRectHeight;
-
+    
         int left   = this.x + this.t_collisionRectX;
         int top    = this.y + this.t_collisionRectY;
         int right  = left + this.t_collisionRectWidth;
         int bottom = top  + this.t_collisionRectHeight;
-
+    
         // check if the collision rectangles of the two sprites intersect
         if (intersectRect(otherLeft, otherTop, otherRight, otherBottom,
-                          left, top, right, bottom)) {
-
+                  left, top, right, bottom)) {
+    
             // collision rectangles intersect
             if (pixelLevel) {
-
+    
                 // we need to check pixel level collision detection.
                 // use only the coordinates within the Sprite frame if 
                 // the collision rectangle is larger than the Sprite 
@@ -993,7 +995,7 @@ public class Sprite extends Layer
                     > this.height) {
                     bottom = this.y + this.height;
                 }
-
+        
                 // similarly for the other Sprite
                 if (s.t_collisionRectX < 0) {
                     otherLeft = s.x;
@@ -1009,74 +1011,73 @@ public class Sprite extends Layer
                     > s.height) {
                     otherBottom = s.y + s.height;
                 }
-
+        
                 // recheck if the updated collision area rectangles intersect
                 if (!intersectRect(otherLeft, otherTop, otherRight, otherBottom,
-                                  left, top, right, bottom)) {
-
+                          left, top, right, bottom)) {
+        
                     // if they don't intersect, return false;
                     return false;
                 }
-
+        
                 // the updated collision rectangles intersect,
                 // go ahead with collision detection
-
-
+        
+        
                 // find intersecting region, 
                 // within the collision rectangles
                 int intersectLeft = (left < otherLeft) ? otherLeft : left;
                 int intersectTop  = (top < otherTop) ? otherTop : top;
-
+        
                 // used once, optimize.
                 int intersectRight  = (right < otherRight) 
                                       ? right : otherRight;
                 int intersectBottom = (bottom < otherBottom) 
                                       ? bottom : otherBottom;
-
+        
                 int intersectWidth  = Math.abs(intersectRight - intersectLeft);
                 int intersectHeight = Math.abs(intersectBottom - intersectTop);
-
+        
                 // have the coordinates in painter space,
                 // need coordinates of top left and width, height
                 // in source image of Sprite.
                 
                 int thisImageXOffset = getImageTopLeftX(intersectLeft, 
-                                                        intersectTop,
-                                                        intersectRight,
-                                                        intersectBottom);
+                                    intersectTop,
+                                    intersectRight,
+                                    intersectBottom);
                 
                 int thisImageYOffset = getImageTopLeftY(intersectLeft, 
-                                                        intersectTop,
-                                                        intersectRight,
-                                                        intersectBottom);
-
+                                    intersectTop,
+                                    intersectRight,
+                                    intersectBottom);
+        
                 int otherImageXOffset = s.getImageTopLeftX(intersectLeft, 
-                                                           intersectTop,
-                                                           intersectRight,
-                                                           intersectBottom);
+                                       intersectTop,
+                                       intersectRight,
+                                       intersectBottom);
                 
                 int otherImageYOffset = s.getImageTopLeftY(intersectLeft, 
-                                                           intersectTop,
-                                                           intersectRight,
-                                                           intersectBottom);
-
+                                       intersectTop,
+                                       intersectRight,
+                                       intersectBottom);
+        
                 // check if opaque pixels intersect.
-
+        
                 return doPixelCollision(thisImageXOffset, thisImageYOffset,
-                                        otherImageXOffset, otherImageYOffset,
-                                        this.sourceImage,
-                                        this.t_currentTransformation,
-                                        s.sourceImage, 
-                                        s.t_currentTransformation,
-                                        intersectWidth, intersectHeight);
-
+                            otherImageXOffset, otherImageYOffset,
+                            this.sourceImage,
+                            this.t_currentTransformation,
+                            s.sourceImage, 
+                            s.t_currentTransformation,
+                            intersectWidth, intersectHeight);
+        
             } else {
                 // collides!
                 return true;
             }
         }
         return false;
-
     }
 
     /**
@@ -1607,9 +1608,9 @@ public class Sprite extends Layer
                 yIncr1 = +1;
             }
 
-//            image1.getRGB(argbData1, 0, height, // scanlength = height
+//          image1.getRGB(argbData1, 0, height, // scanlength = height
 //                          image1XOffset, image1YOffset, height, width);
-            image1.getPixels(argbData1, 0, height, image1XOffset, image1YOffset, width, height);
+            image1.getPixels(argbData1, 0, height, image1XOffset, image1YOffset, height, width);
 
         } else {
 
@@ -1665,7 +1666,7 @@ public class Sprite extends Layer
 
 //            image2.getRGB(argbData2, 0, height,
 //                          image2XOffset, image2YOffset, height, width);
-            image2.getPixels(argbData2, 0, height, image2XOffset, image2YOffset, width, height);
+            image2.getPixels(argbData2, 0, height, image2XOffset, image2YOffset, height, width);
 
         } else {
 
@@ -1899,8 +1900,8 @@ public class Sprite extends Layer
             t_collisionRectY = collisionRectY;
             t_collisionRectWidth = collisionRectWidth;
             t_collisionRectHeight = collisionRectHeight;
-              this.width = srcFrameWidth;
-              this.height = srcFrameHeight;
+            this.width = srcFrameWidth;
+            this.height = srcFrameHeight;
 
             break;
 
@@ -1924,8 +1925,8 @@ public class Sprite extends Layer
             // remains the same,
             // top left X-co-ordinate changes
 
-              this.width = srcFrameWidth;
-              this.height = srcFrameHeight;
+            this.width = srcFrameWidth;
+            this.height = srcFrameHeight;
 
             break;
 
@@ -1946,8 +1947,8 @@ public class Sprite extends Layer
             t_collisionRectHeight = collisionRectHeight;
 
             // width and height are as before
-              this.width = srcFrameWidth;
-              this.height = srcFrameHeight;
+            this.width = srcFrameWidth;
+            this.height = srcFrameHeight;
     
             // the X-offset of the reference point from the top left corner
             // remains the same.
@@ -1975,8 +1976,8 @@ public class Sprite extends Layer
             t_collisionRectWidth = collisionRectHeight;
 
             // set width and height
-              this.width = srcFrameHeight;
-              this.height = srcFrameWidth;
+            this.width = srcFrameHeight;
+            this.height = srcFrameWidth;
 
             break;
 
@@ -1997,9 +1998,9 @@ public class Sprite extends Layer
             t_collisionRectWidth = collisionRectWidth;
             t_collisionRectHeight = collisionRectHeight;
 
-              // set width and height
-              this.width = srcFrameWidth;
-              this.height = srcFrameHeight;
+            // set width and height
+            this.width = srcFrameWidth;
+            this.height = srcFrameHeight;
 
             break;
 
@@ -2020,8 +2021,8 @@ public class Sprite extends Layer
             t_collisionRectWidth = collisionRectHeight;
 
             // set width and height
-              this.width = srcFrameHeight;
-              this.height = srcFrameWidth;
+            this.width = srcFrameHeight;
+            this.height = srcFrameWidth;
 
             break;
 
@@ -2040,8 +2041,8 @@ public class Sprite extends Layer
             t_collisionRectWidth = collisionRectHeight;
 
             // set width and height
-              this.width = srcFrameHeight;
-              this.height = srcFrameWidth;
+            this.width = srcFrameHeight;
+            this.height = srcFrameWidth;
 
             break;
 
@@ -2058,8 +2059,8 @@ public class Sprite extends Layer
             t_collisionRectWidth = collisionRectHeight;
 
             // set width and height
-              this.width = srcFrameHeight;
-              this.height = srcFrameWidth;
+            this.width = srcFrameHeight;
+            this.height = srcFrameWidth;
 
             break;
 
