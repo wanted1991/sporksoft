@@ -35,7 +35,7 @@
     <string name="pref_summary_show_borders">Display border around tiles</string>
     
     <string name="pref_title_blank">Blank location</string>
-    <string name="pref_summary_blank">Location left blank in the finished puzzle</string>
+    <string name="pref_summary_blank">Blank location in finished puzzle</string>
     <string name="pref_blank_dialog_title">Select blank location</string>
     
     <string name="pref_title_size">Size</string>

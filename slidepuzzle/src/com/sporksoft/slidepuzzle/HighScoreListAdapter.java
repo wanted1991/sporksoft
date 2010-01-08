@@ -16,18 +16,14 @@ public class HighScoreListAdapter extends ArrayAdapter {
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
     	HighScoreListItem listItem;
-    	ScoreItem item = (ScoreItem) getItem(position);
+    	ScoreItem item = (ScoreItem) this.getItem(position);
     	
     	if (view == null) {
-    		LayoutInflater factory = LayoutInflater.from(getContext());
+    	    LayoutInflater factory = LayoutInflater.from(getContext());
     		listItem = (HighScoreListItem) factory.inflate(
     				R.layout.high_score_list_item, viewGroup, false);
     	} else {
-    		if (view instanceof HighScoreListItem) {
-    			listItem = (HighScoreListItem) view;
-    		} else {
-    			return view;
-    		}
+    	    listItem = (HighScoreListItem) view;
     	}
     	
     	listItem.init(item);
