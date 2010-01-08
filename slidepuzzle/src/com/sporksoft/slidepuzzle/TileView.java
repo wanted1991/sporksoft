@@ -25,16 +25,16 @@ import android.widget.Chronometer;
 
 public class TileView extends View {
 	private static final boolean DEBUG = false;
-	
-	public static final int SIZE_SMALL = 3;
-	public static final int SIZE_MEDIUM = 4;
-	public static final int SIZE_LARGE = 5;
-	
+		
 	public static final int DIR_UP = 0;
 	public static final int DIR_DOWN = 1;
 	public static final int DIR_LEFT = 2;
 	public static final int DIR_RIGHT = 3;
-	
+
+	public static final int BLANK_FIRST = 0;
+	public static final int BLANK_LAST = 1;
+	public static final int BLANK_RANDOM = 2;
+
 	private static final int SHADOW_RADIUS = 1;
 	
 	//Offset of tile from top left corner of cell
@@ -60,7 +60,7 @@ public class TileView extends View {
 	
 	SharedPreferences mPrefs;
 	private boolean mSolved;
-	boolean mBlankFirst;
+	int mBlankLocation;
 	
 	int mNumberColor;
 	int mOutlineColor;
@@ -138,12 +138,12 @@ public class TileView extends View {
         }
     }
  
-	public void newGame(Tile[] tiles, boolean blankFirst, Chronometer chronometer) {
+	public void newGame(Tile[] tiles, int blankLocation, Chronometer chronometer) {
         mMisplaced = 0;
 	    mTimer = chronometer;
         mSelected = -1; //nothing selected to start
         mSolved = false;
-        mBlankFirst = blankFirst;
+        mBlankLocation = blankLocation;
         
         if (tiles == null) {
             if (mImageSource == SelectImagePreference.IMAGE_RANDOM) {
@@ -158,27 +158,26 @@ public class TileView extends View {
                 Log.v(getClass().getName(), "Custom File: " + mPrefs.getString(PuzzlePreferenceActivity.CUSTOM_PUZZLE_IMAGE, ""));
             }
 
-            mSize = Integer.parseInt(mPrefs.getString(PuzzlePreferenceActivity.PUZZLE_SIZE, String.valueOf(SIZE_MEDIUM)));
+            mSize = Integer.parseInt(mPrefs.getString(PuzzlePreferenceActivity.PUZZLE_SIZE, String.valueOf(4)));
             mSizeSqr = mSize * mSize;
 
             // Init array of tiles
             Random random = new Random();
-            int start;
-            int end;
-            if (mBlankFirst) {
-                mEmptyIndex = 0;
-                start = 1;
-                end = mSizeSqr;
-            } else {
-                start = 0;
-                end = mSizeSqr - 1;
-                mEmptyIndex = mSizeSqr - 1;
-            }
             
             mTiles = new Tile[mSizeSqr];
-            for (int i = start; i < end; ++i) {
+            for (int i = 0; i < mSizeSqr; ++i) {
                 mTiles[i] = new Tile(i, random.nextInt() | 0xff000000);
             }
+
+            // Remove a tile
+            if (mBlankLocation == BLANK_FIRST) {
+                mEmptyIndex = 0;
+            } else if (mBlankLocation == BLANK_LAST) {
+                mEmptyIndex = mSizeSqr - 1;
+            } else {
+                mEmptyIndex = random.nextInt(mSizeSqr);
+            }            
+            mTiles[mEmptyIndex] = null;
             
             // Mix up puzzle with valid moves only
             for (int i = 0; i < 100*mSize; ++i) {
@@ -583,11 +582,9 @@ public class TileView extends View {
     
     private void onSolved() {
         mSolved = true;
-        if (mBlankFirst) {
-            mTiles[0] = new Tile(0, new Random().nextInt() | 0xff000000);
-        } else {
-            mTiles[mSizeSqr-1] = new Tile(mSizeSqr-1, new Random().nextInt() | 0xff000000);            
-        }
+        
+        mTiles[mEmptyIndex] = new Tile(mEmptyIndex, new Random().nextInt() | 0xff000000);
+        
         invalidate();
     }
     

@@ -90,10 +90,11 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
         mTimerView.setTextColor(prefs.getInt(PuzzlePreferenceActivity.TIMER_COLOR, getResources().getColor(R.drawable.default_fg_color)));
                 
         if (icicle == null) {
-            mTileView.newGame(null, prefs.getBoolean(PuzzlePreferenceActivity.BLANK_LOCATION, false), mTimerView);
+            int blankLoc = Integer.parseInt(prefs.getString(PuzzlePreferenceActivity.BLANK_LOCATION, String.valueOf(1)));
+            mTileView.newGame(null, blankLoc, mTimerView);
             mTime = 0;
         } else {
-            mTileView.newGame((Tile[]) icicle.getParcelableArray("tiles"), icicle.getBoolean("blank_first"), mTimerView);
+            mTileView.newGame((Tile[]) icicle.getParcelableArray("tiles"), icicle.getInt("blank_first"), mTimerView);
             mTime = icicle.getLong("time", 0);
         }
     }
@@ -219,7 +220,9 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
         switch(item.getItemId()) {
             case MENU_NEW: {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-                mTileView.newGame(null, prefs.getBoolean(PuzzlePreferenceActivity.BLANK_LOCATION, false), mTimerView);
+                int blankLoc = Integer.parseInt(prefs.getString(PuzzlePreferenceActivity.BLANK_LOCATION, String.valueOf(1)));
+
+                mTileView.newGame(null, blankLoc, mTimerView);
                 
                 //reset timer
                 mTime = 0;
@@ -252,7 +255,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
         super.onSaveInstanceState(outState);
 
         outState.putParcelableArray("tiles", mTileView.getTiles());
-        outState.putBoolean("blank_first", mTileView.mBlankFirst);
+        outState.putInt("blank_first", mTileView.mBlankLocation);
         outState.putLong("time", mTime);
     }
         

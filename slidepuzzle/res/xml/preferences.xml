@@ -57,9 +57,12 @@
         android:entries="@array/pref_entries_size"
         android:entryValues="@array/pref_entryvalues_size"
         android:dialogTitle="@string/pref_size_dialog_title" />
-    <CheckBoxPreference android:defaultValue="false"
-        android:key="pref_key_blank_loc"
-        android:summary="@string/pref_summary_blank_loc"
-        android:title="@string/pref_title_blank_loc"/>    
+    <ListPreference android:defaultValue="1"
+        android:key="pref_key_blank"
+        android:title="@string/pref_title_blank"    
+        android:summary="@string/pref_summary_blank"
+        android:entries="@array/pref_entries_blank"
+        android:entryValues="@array/pref_entryvalues_blank"
+        android:dialogTitle="@string/pref_blank_dialog_title" />
   </PreferenceCategory>
 </PreferenceScreen>
