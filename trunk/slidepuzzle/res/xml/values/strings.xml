@@ -20,6 +20,9 @@
     <string name="dialog_no">Cancel</string>
     
     <!-- PuzzlePreferenceActivity -->
+
+    <string name="choose_image">Select image from</string>
+    
     <string name="settings_title">Settings</string>
     <string name="appearance_settings_title">Appearance</string>
     <string name="mechanics_settings_title">Mechanics</string>

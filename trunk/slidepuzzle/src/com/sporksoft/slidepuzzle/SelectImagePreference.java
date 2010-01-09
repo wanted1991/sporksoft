@@ -40,7 +40,7 @@ public class SelectImagePreference extends Preference {
                 
                 innerIntent.setType(IMAGE_TYPE_UNSPECIFIED);
 
-                Intent wrapperIntent = Intent.createChooser(innerIntent, null);
+                Intent wrapperIntent = Intent.createChooser(innerIntent, mContext.getString(R.string.choose_image));
                 ((Activity) mContext).startActivityForResult(wrapperIntent, PuzzlePreferenceActivity.REQUEST_CODE_LOAD_IMAGE);
             }
         }
