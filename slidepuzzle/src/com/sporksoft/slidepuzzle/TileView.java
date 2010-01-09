@@ -96,7 +96,6 @@ public class TileView extends View {
 		//update the preferences which should have an immediate effect
 	    int bgColor = mPrefs.getInt(PuzzlePreferenceActivity.BACKGROUND_COLOR, getResources().getColor(R.drawable.default_bg_color));
 	    setBackgroundColor(bgColor);
-	    mTimer.setBackgroundColor(bgColor);
 	    
 		mShowNumbers = mPrefs.getBoolean(PuzzlePreferenceActivity.SHOW_NUMBERS, true);
 		mShowOutlines = mPrefs.getBoolean(PuzzlePreferenceActivity.SHOW_BORDERS, true);

@@ -1,28 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:qwad="http://schemas.android.com/apk/res/com.sporksoft.slidepuzzle"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
         
-    <Chronometer 
-        android:id="@+id/timer_view"
+    <com.qwapi.adclient.android.view.QWAdView
+        android:id="@+id/QWAd"
         android:layout_width="fill_parent" 
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textColor="#ffffff"
-        android:background="#000000"
-        android:shadowColor="#000000"
-        android:shadowDx="1"
-        android:shadowDy="1"
-        android:shadowRadius="1"
-        android:format="Elapsed Time: %s"
-        android:saveEnabled="true"
-        android:padding="5dip"/>
-    
-    <com.sporksoft.slidepuzzle.TileView  
-        android:id="@+id/tile_view"
-        android:layout_width="fill_parent" 
-        android:layout_height="fill_parent" 
-        android:background="@drawable/default_bg_color"
-    />
+        android:layout_height="51px"
+        qwad:siteId="SlidePuzzle-g4550xqc"
+        qwad:publisherId="00a22af898d24dbdb2d977a83f04c589"
+        qwad:mediaType="banner"
+        qwad:displayMode="autoRotate"
+        qwad:adInterval="60"
+        qwad:renderAdOnCreate="true"
+        qwad:placement="top"
+        qwad:animation="slide"
+        qwad:bgColor="black"
+        qwad:defaultAdImage="@drawable/default_ad"
+        qwad:testMode="true"/>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <com.sporksoft.slidepuzzle.TileView  
+            android:id="@+id/tile_view"
+            android:layout_width="fill_parent" 
+            android:layout_height="fill_parent"
+            android:background="@drawable/default_bg_color"/>
+        
+        <Chronometer 
+            android:id="@+id/timer_view"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:textStyle="bold"
+            android:textColor="#ffffff"
+            android:background="@drawable/clock_bg"
+            android:shadowColor="#000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:saveEnabled="true"
+            android:padding="2px"/>
+
+    </FrameLayout>
 </LinearLayout>

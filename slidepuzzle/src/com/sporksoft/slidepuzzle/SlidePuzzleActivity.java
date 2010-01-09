@@ -2,6 +2,8 @@ package com.sporksoft.slidepuzzle;
 
 import java.util.ArrayList;
 
+import com.qwapi.adclient.android.view.QWAdView;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -11,6 +13,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnCancelListener;
+import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.view.KeyEvent;
@@ -100,6 +103,8 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
             mTileView.newGame((Tile[]) icicle.getParcelableArray("tiles"), icicle.getInt("blank_first"), mTimerView);
             mTime = icicle.getLong("time", 0);
         }
+        
+       com.qwapi.adclient.android.AdApiRegistration.registerApplication(this); 
     }
     
     @Override
@@ -118,7 +123,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
         mTimerView.setBase(SystemClock.elapsedRealtime() - mTime);
     	if (!mTileView.isSolved()) {
     	    mTimerView.start();
-    	}
+    	}    	
     }
     
     @Override
@@ -184,6 +189,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
     }
 
     @Override public boolean onTouchEvent(MotionEvent event) {
+        super.onTouchEvent(event);
         // Prevent user from moving tiles if the puzzle has been solved 
         if (mTileView.isSolved()) {
             return false;
@@ -240,6 +246,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
                 mTimerView.stop();
                 mTimerView.setBase(SystemClock.elapsedRealtime());
                 mTimerView.start();
+                
                 break;
             }
             case MENU_SCORES: {
