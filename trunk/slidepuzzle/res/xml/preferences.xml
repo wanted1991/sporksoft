@@ -1,5 +1,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
   <PreferenceCategory android:title="@string/appearance_settings_title">
+    <CheckBoxPreference android:defaultValue="true"
+        android:key="pref_key_show_statusbar"
+        android:summary="@string/pref_summary_show_statusbar"
+        android:title="@string/pref_title_show_statusbar"/>   
     <com.sporksoft.slidepuzzle.SelectColorPreference
         android:defaultValue="@drawable/default_bg_color"
         android:key="pref_key_bg_color"

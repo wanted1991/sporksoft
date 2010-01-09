@@ -20,13 +20,15 @@
     <string name="dialog_no">Cancel</string>
     
     <!-- PuzzlePreferenceActivity -->
-
     <string name="choose_image">Select image from</string>
     
     <string name="settings_title">Settings</string>
     <string name="appearance_settings_title">Appearance</string>
     <string name="mechanics_settings_title">Mechanics</string>
     <string name="menu_restore_defaults">Restore default settings</string>
+
+    <string name="pref_title_show_statusbar">Show status bar</string>
+    <string name="pref_summary_show_statusbar">Display the status bar</string>
 
     <string name="pref_title_show_timer">Show timer</string>
     <string name="pref_summary_show_timer">Display elapsed game time</string>

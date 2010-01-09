@@ -20,6 +20,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.View.OnKeyListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -78,7 +80,8 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+                
         setContentView(R.layout.slide_puzzle);
         mTileView = (TileView) findViewById(R.id.tile_view);
         mTileView.requestFocus();
@@ -102,6 +105,14 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
     @Override
     public void onResume() {
     	super.onResume();
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+    	if (prefs.getBoolean(PuzzlePreferenceActivity.SHOW_STATUS, true)) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);       	    
+    	} else {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
+    	}    	
 
     	mTileView.updateInstantPrefs();
         mTimerView.setBase(SystemClock.elapsedRealtime() - mTime);
