@@ -53,7 +53,7 @@ public class PuzzlePreferenceActivity extends PreferenceActivity {
                     
                     try {
                         startActivityForResult(intent, REQUEST_CODE_CROP_IMAGE);
-                    } catch (ActivityNotFoundException e) {
+                    } catch (Exception e) {
                         ((SelectImagePreference) findPreference(IMAGE_SOURCE)).setCustomLocation(data.getData());                        
                     }
                 }
