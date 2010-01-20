@@ -87,16 +87,20 @@ public class ScoreUtil {
     }
     
     public long[] getAllScores() {
-        long[] allScores = new long[mScores.size()];
-        int i = 0;
-        for (Iterator<Long> it = mScores.values().iterator(); it.hasNext(); i++) {
-            Long value = it.next();
+        String[] sizes = mContext.getResources().getStringArray(R.array.pref_entryvalues_size);
+
+        int len = mScores.size();
+        long[] allScores = new long[len];
+        for (int i = 0; i < len; i++) {
+            Long value = mScores.get(sizes[i]);
             allScores[i] = value;
         }
         return allScores;
     }
         
     public boolean updateScores(long time, int size) {
+        String[] sizes = mContext.getResources().getStringArray(R.array.pref_entryvalues_size);
+
         String key = String.valueOf(size);
         long score = mScores.get(key).longValue();
         if (time < score || score <= 0) {
@@ -109,8 +113,9 @@ public class ScoreUtil {
                 fout = mContext.openFileOutput(SCORE_FILE, Context.MODE_PRIVATE);
                 DataOutputStream out = new DataOutputStream(fout);
                 
-                for (Iterator<Long> it = mScores.values().iterator(); it.hasNext(); ) {
-                    Long value = it.next();
+                int len = mScores.size();
+                for (int i = 0; i < len; i++) {
+                    Long value = mScores.get(sizes[i]);
                     out.writeLong(value.longValue());
                 }
 
