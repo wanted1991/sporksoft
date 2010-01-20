@@ -14,7 +14,6 @@ import android.os.SystemClock;
 
 public class PuzzlePreferenceActivity extends PreferenceActivity {
 	final static int REQUEST_CODE_LOAD_IMAGE = 1;
-    final static int REQUEST_CODE_CROP_IMAGE = 2;
 	
 	final static int MENU_RESTORE_DEFAULTS = 0;
 	
@@ -45,26 +44,12 @@ public class PuzzlePreferenceActivity extends PreferenceActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	switch(requestCode) {
-            case REQUEST_CODE_LOAD_IMAGE:
+            case REQUEST_CODE_LOAD_IMAGE: {
                 if (data != null) {
-                    Intent intent = new Intent("com.android.camera.action.CROP");
-                    intent.setClassName("com.android.camera", "com.android.camera.CropImage");
-                    intent.setData(data.getData());
-                    
-                    try {
-                        startActivityForResult(intent, REQUEST_CODE_CROP_IMAGE);
-                    } catch (Exception e) {
-                        ((SelectImagePreference) findPreference(IMAGE_SOURCE)).setCustomLocation(data.getData());                        
-                    }
+                    ((SelectImagePreference) findPreference(IMAGE_SOURCE)).setCustomLocation(data.getData());                        
                 }
-                break;
-            case REQUEST_CODE_CROP_IMAGE:
-                if (data != null) {
-                    Uri uri = Uri.parse(data.getAction());
-                    
-                    ((SelectImagePreference) findPreference(IMAGE_SOURCE)).setCustomLocation(uri);
-                }
-                break;
+            }
+            break;
         }
     }
     
@@ -94,6 +79,4 @@ public class PuzzlePreferenceActivity extends PreferenceActivity {
         setPreferenceScreen(null);
         addPreferencesFromResource(R.xml.preferences);
     }
-
-
 }

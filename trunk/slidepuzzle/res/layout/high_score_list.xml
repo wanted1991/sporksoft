@@ -4,33 +4,33 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content">
 
-<TableLayout
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content"
-    android:selectable="false"
-    android:focusable="false"
-    android:padding="5dip"
-    android:stretchColumns="*">  
-
-    <TableRow>
-
-        <TextView
-            android:singleLine="true"
-            android:gravity="center"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#ffffffff"
-            android:text="@string/time_header"/>
-
-        <TextView
-            android:singleLine="true"
-            android:gravity="center"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#ffffffff"
-            android:text="@string/size_header"/>
-    </TableRow>
-</TableLayout>
+    <TableLayout
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+        android:selectable="false"
+        android:focusable="false"
+        android:padding="5dip"
+        android:stretchColumns="*">  
+    
+        <TableRow>
+    
+            <TextView
+                android:singleLine="true"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#ffffffff"
+                android:text="@string/time_header"/>
+    
+            <TextView
+                android:singleLine="true"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#ffffffff"
+                android:text="@string/size_header"/>
+        </TableRow>
+    </TableLayout>
 
     <ListView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/score_list"
