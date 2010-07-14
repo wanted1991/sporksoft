@@ -33,6 +33,7 @@ public class PuzzlePreferenceActivity extends PreferenceActivity {
     public static final String BORDER_COLOR = "pref_key_border_color";
     public static final String TIMER_COLOR = "pref_key_timer_color";
     public static final String BACKGROUND_COLOR = "pref_key_bg_color";
+    public static final String NUMBER_SIZE = "pref_key_number_size";
     
     /** Called when the activity is first created. */
     @Override

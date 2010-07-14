@@ -8,7 +8,7 @@
     <com.qwapi.adclient.android.view.QWAdView
         android:id="@+id/QWAd"
         android:layout_width="fill_parent" 
-        android:layout_height="51px"
+        android:layout_height="wrap_content"
         qwad:siteId="SlidePuzzle-g4550xqc"
         qwad:publisherId="00a22af898d24dbdb2d977a83f04c589"
         qwad:mediaType="banner"
@@ -19,7 +19,7 @@
         qwad:animation="slide"
         qwad:bgColor="black"
         qwad:defaultAdImage="@drawable/default_ad"
-        qwad:testMode="true"/>
+        qwad:testMode="false"/>
 
     <FrameLayout
         android:layout_width="fill_parent"
@@ -44,7 +44,14 @@
             android:shadowDy="1"
             android:shadowRadius="1"
             android:saveEnabled="true"
-            android:padding="2px"/>
+            android:padding="2px"
+            android:gravity="center"/>
 
+		<ImageView
+            android:id="@+id/complete_view"
+            android:layout_width="fill_parent" 
+            android:layout_height="fill_parent"
+            android:scaleType="fitXY"
+            android:visibility="gone"/>		
     </FrameLayout>
 </LinearLayout>

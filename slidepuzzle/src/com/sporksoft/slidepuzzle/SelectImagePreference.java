@@ -82,6 +82,9 @@ public class SelectImagePreference extends Preference {
     
     //TODO merge the following 2 methods into 1
     public static void saveRandomImagePreference(Context context, Uri uri) {
+    	if (uri == null)
+    		return;
+    	
         Editor editor = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext()).edit();
         
         editor.putString(PuzzlePreferenceActivity.RANDOM_PUZZLE_IMAGE, uri.toString());
@@ -108,6 +111,10 @@ public class SelectImagePreference extends Preference {
         Uri uri = new Random().nextInt(1) == 0 ? Media.EXTERNAL_CONTENT_URI : Media.INTERNAL_CONTENT_URI;
  
         Cursor cursor =  Media.query(resolver, uri, projection, null, MediaColumns._ID);
+        if (cursor == null) {
+        	return null;
+        }
+        
         int size = cursor.getCount();
         
         cursor.moveToPosition(new Random().nextInt(size));

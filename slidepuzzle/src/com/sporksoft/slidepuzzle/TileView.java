@@ -57,6 +57,7 @@ public class TileView extends View {
 	boolean mShowImage;
 	Bitmap mBitmap;
 	Bitmap mDefaultBitmap;
+	int mNumberSize;
 	
 	SharedPreferences mPrefs;
 	private boolean mSolved;
@@ -88,7 +89,6 @@ public class TileView extends View {
 	    
 	    mPaint = new Paint();
         mPaint.setTextAlign(Paint.Align.CENTER);
-        mPaint.setTextSize(16);
         mPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));        
 	}
 	
@@ -104,6 +104,7 @@ public class TileView extends View {
 	    mShowImage = mPrefs.getBoolean(PuzzlePreferenceActivity.SHOW_IMAGE, true);
 	    mImageSource = mPrefs.getInt(PuzzlePreferenceActivity.IMAGE_SOURCE, 0);
         mTimer.setTextColor(mPrefs.getInt(PuzzlePreferenceActivity.TIMER_COLOR, getResources().getColor(R.drawable.default_fg_color)));
+	    mNumberSize = Integer.parseInt(mPrefs.getString(PuzzlePreferenceActivity.NUMBER_SIZE, "20"));
 	    
 	    if (mPrefs.getBoolean(PuzzlePreferenceActivity.SHOW_TIMER, true)) {
 	        mTimer.setVisibility(View.VISIBLE);
@@ -254,7 +255,7 @@ public class TileView extends View {
 			
 			//Draw the image			
 			if (mShowImage) {    
-    			Bitmap toDraw = (mImageSource != SelectImagePreference.IMAGE_DEFAULT && mBitmap != null) ? mBitmap : mDefaultBitmap;
+    			Bitmap toDraw = getCurrentImage();
                 int tileNumber = mTiles[index].mNumber;
                 int xSrc = (int)((tileNumber % mSize) * tileWidth);
                 int ySrc = (int)((tileNumber / mSize) * tileHeight);
@@ -273,6 +274,7 @@ public class TileView extends View {
             //Draw the number
             if (mShowNumbers) {
 	            mPaint.setColor(mNumberColor);
+	            mPaint.setTextSize(mNumberSize);
 	            canvas.drawText(String.valueOf(mTiles[index].mNumber + 1), x + (tileWidth/2), y + (tileHeight/2), mPaint);
             }   
             
@@ -593,5 +595,9 @@ public class TileView extends View {
     
     public Tile[] getTiles() {
         return mTiles;
+    }
+    
+    public Bitmap getCurrentImage() {
+    	return (mImageSource != SelectImagePreference.IMAGE_DEFAULT && mBitmap != null) ? mBitmap : mDefaultBitmap;
     }
 }

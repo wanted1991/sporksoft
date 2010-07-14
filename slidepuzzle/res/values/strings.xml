@@ -20,10 +20,15 @@
     <string name="dialog_no">Cancel</string>
     
     <!-- PuzzlePreferenceActivity -->
+    <string name="choose_image">Select image from</string>
+    
     <string name="settings_title">Settings</string>
     <string name="appearance_settings_title">Appearance</string>
     <string name="mechanics_settings_title">Mechanics</string>
     <string name="menu_restore_defaults">Restore default settings</string>
+
+    <string name="pref_title_show_statusbar">Show status bar</string>
+    <string name="pref_summary_show_statusbar">Display the status bar</string>
 
     <string name="pref_title_show_timer">Show timer</string>
     <string name="pref_summary_show_timer">Display elapsed game time</string>
@@ -34,12 +39,17 @@
     <string name="pref_title_show_borders">Show borders</string>
     <string name="pref_summary_show_borders">Display border around tiles</string>
     
-    <string name="pref_title_blank_loc">Blank first</string>
-    <string name="pref_summary_blank_loc">If the blank tile should be first or last for new puzzles </string>
+    <string name="pref_title_blank">Blank location</string>
+    <string name="pref_summary_blank">Blank location in finished puzzle</string>
+    <string name="pref_blank_dialog_title">Select blank location</string>
     
-    <string name="pref_title_size">Size</string>
+    <string name="pref_title_size">Puzzle size</string>
     <string name="pref_summary_size">How large to make new puzzles</string>
     <string name="pref_size_dialog_title">Select size</string>
+
+    <string name="pref_title_number_size">Number size</string>
+    <string name="pref_summary_number_size">How large to draw numbers</string>
+    <string name="pref_number_size_dialog_title">Select size</string>
     
     <string name="pref_title_show_image">Show image</string>
     <string name="pref_summary_show_image">Create tiles from an image</string> 
