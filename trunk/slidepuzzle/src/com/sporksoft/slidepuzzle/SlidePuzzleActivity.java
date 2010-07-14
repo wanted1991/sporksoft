@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnCancelListener;
 import android.graphics.drawable.Drawable;
+import android.os.Parcelable;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.view.KeyEvent;
@@ -26,9 +27,12 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnKeyListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.Chronometer;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -38,6 +42,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
 	private static final int MENU_SCORES = 1;
 	private static final int MENU_SETTINGS = 2;
 	
+	private ImageView mCompleteView;
 	private TileView mTileView;
 	private Chronometer mTimerView;
     private long mTime;
@@ -86,6 +91,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
                 
         setContentView(R.layout.slide_puzzle);
+        mCompleteView = (ImageView) findViewById(R.id.complete_view);
         mTileView = (TileView) findViewById(R.id.tile_view);
         mTileView.requestFocus();
         mTileView.setOnKeyListener(this);
@@ -100,7 +106,18 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
             mTileView.newGame(null, blankLoc, mTimerView);
             mTime = 0;
         } else {
-            mTileView.newGame((Tile[]) icicle.getParcelableArray("tiles"), icicle.getInt("blank_first"), mTimerView);
+        	Parcelable[] parcelables = icicle.getParcelableArray("tiles");
+        	Tile[] tiles = null;
+        	if (parcelables != null) {
+        		int len = parcelables.length;
+        		
+        		tiles = new Tile[len];
+        		for (int i = 0; i < len; i++) {
+        			tiles[i] = (Tile) parcelables[i];
+        		}
+        	}
+        	
+            mTileView.newGame(tiles, icicle.getInt("blank_first"), mTimerView);
             mTime = icicle.getLong("time", 0);
         }
         
@@ -165,6 +182,12 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
             }
 
             if (mTileView.checkSolved()) {
+            	mCompleteView.setImageBitmap(mTileView.getCurrentImage());
+            	mCompleteView.setVisibility(View.VISIBLE);
+            	
+            	Animation animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+            	mCompleteView.startAnimation(animation);
+            	
                 postScore();
             }
             return true;
@@ -209,7 +232,13 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
             case MotionEvent.ACTION_UP: {
             	mTileView.dropTile(event.getX(), event.getY());
                 if (mTileView.checkSolved()) {
-                    postScore();
+                	mCompleteView.setImageBitmap(mTileView.getCurrentImage());
+                	mCompleteView.setVisibility(View.VISIBLE);
+
+                	Animation animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+                	mCompleteView.startAnimation(animation);
+
+                	postScore();
                 }
             	return true;
             }
@@ -236,6 +265,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case MENU_NEW: {
+            	mCompleteView.setVisibility(View.GONE);
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 int blankLoc = Integer.parseInt(prefs.getString(PuzzlePreferenceActivity.BLANK_LOCATION, String.valueOf(1)));
 

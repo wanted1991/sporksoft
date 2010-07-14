@@ -42,6 +42,13 @@
         android:key="pref_key_number_color"
         android:title="@string/pref_title_number_color"
         android:summary="@string/pref_summary_number_color"/>    
+    <ListPreference android:defaultValue="20"
+        android:key="pref_key_number_size"
+        android:title="@string/pref_title_number_size"
+        android:summary="@string/pref_summary_number_size"
+        android:entries="@array/pref_entries_number_size"
+        android:entryValues="@array/pref_entryvalues_number_size"
+        android:dialogTitle="@string/pref_number_size_dialog_title" />
     <CheckBoxPreference android:defaultValue="true"
         android:key="pref_key_show_image"
         android:summary="@string/pref_summary_show_image"

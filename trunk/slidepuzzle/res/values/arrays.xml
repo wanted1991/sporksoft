@@ -18,6 +18,30 @@
         <item>8</item>
     </string-array>   
 
+    <string-array name="pref_entries_number_size">
+        <item>Small</item>
+        <item>Medium</item>
+        <item>Large</item>
+    </string-array>
+
+    <string-array name="pref_entryvalues_number_size">
+        <item>16</item>
+        <item>20</item>
+        <item>24</item>
+    </string-array>   
+
+    <string-array name="pref_entries_blank">
+        <item>First</item>
+        <item>Last</item>
+        <item>Random</item>
+    </string-array>
+
+    <string-array name="pref_entryvalues_blank">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>   
+
     <string-array name="pref_entries_image_source">
         <item>Default</item>
         <item>Random</item>
