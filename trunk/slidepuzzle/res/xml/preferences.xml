@@ -53,7 +53,7 @@
         android:key="pref_key_show_image"
         android:summary="@string/pref_summary_show_image"
         android:title="@string/pref_title_show_image" />
-    <com.sporksoft.slidepuzzle.SelectImagePreference
+    <com.sporksoft.slidepuzzle.SelectImagePreference android:defaultValue="1"
         android:layout="?android:attr/preferenceLayoutChild"
         android:dependency="pref_key_show_image"    
         android:key="pref_key_image_source"

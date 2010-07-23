@@ -74,7 +74,7 @@ public class SelectImagePreference extends Preference {
         //builder.setIcon();
         builder.setTitle(R.string.pref_image_source_dialog_title);
         builder.setCancelable(true);
-        builder.setSingleChoiceItems(R.array.pref_entries_image_source, getPersistedInt(0), new SelectionListener());
+        builder.setSingleChoiceItems(R.array.pref_entries_image_source, getPersistedInt(1), new SelectionListener());
         builder.setPositiveButton(R.string.dialog_yes, new ConfirmationListener());
         builder.setNegativeButton(R.string.dialog_no, null);
         builder.show();        
@@ -111,13 +111,11 @@ public class SelectImagePreference extends Preference {
         Uri uri = new Random().nextInt(1) == 0 ? Media.EXTERNAL_CONTENT_URI : Media.INTERNAL_CONTENT_URI;
  
         Cursor cursor =  Media.query(resolver, uri, projection, null, MediaColumns._ID);
-        if (cursor == null) {
+        if (cursor == null || cursor.getCount() <= 0) {
         	return null;
         }
         
-        int size = cursor.getCount();
-        
-        cursor.moveToPosition(new Random().nextInt(size));
+        cursor.moveToPosition(new Random().nextInt(cursor.getCount()));
         
         return Uri.withAppendedPath(uri, cursor.getString(0));
     }
