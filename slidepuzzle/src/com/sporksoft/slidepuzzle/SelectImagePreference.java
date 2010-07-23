@@ -16,8 +16,6 @@ import android.provider.BaseColumns;
 import android.provider.MediaStore.Images.Media;
 import android.provider.MediaStore.MediaColumns;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
-import android.widget.ListView;
 
 import java.util.Random;
 
