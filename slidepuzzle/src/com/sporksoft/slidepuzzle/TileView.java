@@ -1,8 +1,9 @@
-//TODO optimize drawing to only redraw the section that actually changed
 package com.sporksoft.slidepuzzle;
 
 import java.io.FileNotFoundException;
 import java.util.Random;
+
+import com.sporksoft.slidepuzzle.R;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,9 +14,9 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.Bitmap.Config;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -24,6 +25,7 @@ import android.widget.Chronometer;
 
 
 public class TileView extends View {
+	private static final String LOG_TAG = TileView.class.getName();
 	private static final boolean DEBUG = false;
 		
 	public static final int DIR_UP = 0;
@@ -93,16 +95,13 @@ public class TileView extends View {
 	}
 	
 	public void updateInstantPrefs() {		
-		//update the preferences which should have an immediate effect
-	    int bgColor = mPrefs.getInt(PuzzlePreferenceActivity.BACKGROUND_COLOR, getResources().getColor(R.drawable.default_bg_color));
-	    setBackgroundColor(bgColor);
-	    
+		//update the preferences which should have an immediate effect	    
 		mShowNumbers = mPrefs.getBoolean(PuzzlePreferenceActivity.SHOW_NUMBERS, true);
 		mShowOutlines = mPrefs.getBoolean(PuzzlePreferenceActivity.SHOW_BORDERS, true);
         mNumberColor = mPrefs.getInt(PuzzlePreferenceActivity.NUMBER_COLOR, getResources().getColor(R.drawable.default_fg_color));
         mOutlineColor = mPrefs.getInt(PuzzlePreferenceActivity.BORDER_COLOR, getResources().getColor(R.drawable.default_fg_color));
 	    mShowImage = mPrefs.getBoolean(PuzzlePreferenceActivity.SHOW_IMAGE, true);
-	    mImageSource = mPrefs.getInt(PuzzlePreferenceActivity.IMAGE_SOURCE, 0);
+	    mImageSource = mPrefs.getInt(PuzzlePreferenceActivity.IMAGE_SOURCE, 1);
         mTimer.setTextColor(mPrefs.getInt(PuzzlePreferenceActivity.TIMER_COLOR, getResources().getColor(R.drawable.default_fg_color)));
 	    mNumberSize = Integer.parseInt(mPrefs.getString(PuzzlePreferenceActivity.NUMBER_SIZE, "20"));
 	    
@@ -123,17 +122,28 @@ public class TileView extends View {
         int h = getMeasuredHeight();
         Context context = getContext();
         if (w > 0 && h > 0) {
+        	if (mDefaultBitmap != null) {
+        		mDefaultBitmap.recycle();
+        		mDefaultBitmap = null;
+        	}
             mDefaultBitmap = getImageFromResource(context, R.drawable.default_image, w, h);
-
-            mImageSource = mPrefs.getInt(PuzzlePreferenceActivity.IMAGE_SOURCE, 0);
+            mImageSource = mPrefs.getInt(PuzzlePreferenceActivity.IMAGE_SOURCE, 1);
             if (mImageSource == SelectImagePreference.IMAGE_CUSTOM ) {
+            	if (mBitmap != null) {
+            		mBitmap.recycle();
+            		mBitmap = null;
+            	}
                 mBitmap = getImageFromUri(context, 
                         Uri.parse(mPrefs.getString(PuzzlePreferenceActivity.CUSTOM_PUZZLE_IMAGE, "")),
                         w, h);
             } else if (mImageSource == SelectImagePreference.IMAGE_RANDOM) {
+            	if (mBitmap != null) {
+            		mBitmap.recycle();
+            		mBitmap = null;
+            	}
                 mBitmap = getImageFromUri(context, 
                         Uri.parse(mPrefs.getString(PuzzlePreferenceActivity.RANDOM_PUZZLE_IMAGE, "")),
-                        w, h);                
+                        w, h);
             }
         }
     }
@@ -148,14 +158,18 @@ public class TileView extends View {
         if (tiles == null) {
             if (mImageSource == SelectImagePreference.IMAGE_RANDOM) {
                 SelectImagePreference.saveRandomImagePreference(getContext(), SelectImagePreference.getRandomImage(getContext().getContentResolver()));
+                if (mBitmap != null) {
+                	mBitmap.recycle();
+                	mBitmap = null;
+                }
                 mBitmap = getImageFromUri(getContext(), 
                         Uri.parse(mPrefs.getString(PuzzlePreferenceActivity.RANDOM_PUZZLE_IMAGE, "")),
                         getWidth(), getHeight());                
             }
             if (DEBUG) {
-                Log.v(getClass().getName(), "Image Source: " + mPrefs.getInt(PuzzlePreferenceActivity.IMAGE_SOURCE, 0));
-                Log.v(getClass().getName(), "Rand File: " + mPrefs.getString(PuzzlePreferenceActivity.RANDOM_PUZZLE_IMAGE, ""));
-                Log.v(getClass().getName(), "Custom File: " + mPrefs.getString(PuzzlePreferenceActivity.CUSTOM_PUZZLE_IMAGE, ""));
+                Log.v(LOG_TAG, "Image Source: " + mPrefs.getInt(PuzzlePreferenceActivity.IMAGE_SOURCE, 0));
+                Log.v(LOG_TAG, "Rand File: " + mPrefs.getString(PuzzlePreferenceActivity.RANDOM_PUZZLE_IMAGE, ""));
+                Log.v(LOG_TAG, "Custom File: " + mPrefs.getString(PuzzlePreferenceActivity.CUSTOM_PUZZLE_IMAGE, ""));
             }
 
             mSize = Integer.parseInt(mPrefs.getString(PuzzlePreferenceActivity.PUZZLE_SIZE, String.valueOf(4)));
@@ -209,7 +223,7 @@ public class TileView extends View {
         }
         
         if (DEBUG) {
-            Log.v(getClass().getName(), "mMisplaced: " + mMisplaced);
+            Log.v(LOG_TAG, "mMisplaced: " + mMisplaced);
         }
 	}
 	
@@ -306,7 +320,7 @@ public class TileView extends View {
 
 
 		if (DEBUG) {
-			Log.v(getClass().getName(), "Index: " + 
+			Log.v(LOG_TAG, "Index: " + 
 					(int)((y - loc[1]) / tileHeight) * mSize + (int)((x -loc[0]) / tileWidth));
 		}
 		
@@ -447,13 +461,13 @@ public class TileView extends View {
         mOffsetY = 0;
         
         if (DEBUG) {
-            Log.v(getClass().getName(), "Grab: " + mSelected + " at (" + x + ", " + y + ")");
+            Log.v(LOG_TAG, "Grab: " + mSelected + " at (" + x + ", " + y + ")");
         }
     }
     
     public void dropTile(float x, float y) {
         if (DEBUG) {    	
-            Log.v(getClass().getName(), "Drop: " + mSelected + " at (" + x + ", " + y + ")");
+            Log.v(LOG_TAG, "Drop: " + mSelected + " at (" + x + ", " + y + ")");
         }
         
     	if (mSelected != -1 && (Math.abs(mOffsetX) > getTileWidth()/2 ||
@@ -524,7 +538,7 @@ public class TileView extends View {
         try {
             pfd = context.getContentResolver().openFileDescriptor(uri, "r");
         } catch(FileNotFoundException fnfe) {
-            Log.v(TileView.class.getName(), fnfe.getLocalizedMessage());
+            Log.e(LOG_TAG, Log.getStackTraceString(fnfe));
             return null;
         }
         
@@ -536,20 +550,60 @@ public class TileView extends View {
         // get the image and scale it appropriately
         opts.inJustDecodeBounds = false;
         opts.inSampleSize = Math.max(opts.outWidth/width, opts.outHeight/height);
-        
-        Bitmap bmp = BitmapFactory.decodeFileDescriptor(pfd.getFileDescriptor(), null, opts);
-        if (bmp == null) {
+
+        Bitmap bitmap = BitmapFactory.decodeFileDescriptor(pfd.getFileDescriptor(), null, opts);
+        if (bitmap == null) {
             return null;
         }
         
-        return Bitmap.createScaledBitmap(bmp,
-                width, height, false);
+        int scaledWidth = bitmap.getWidth();
+        int scaledHeight = bitmap.getHeight();
+        
+        if (scaledWidth < scaledHeight) {
+        	float scale = width / (float) scaledWidth;
+        	
+        	scaledWidth = width;
+        	scaledHeight = (int) Math.ceil(scaledHeight * scale);        	
+        	if (scaledHeight < height) {
+            	scale = height / (float) scaledHeight;
+            	
+            	scaledHeight = height;
+            	scaledWidth = (int) Math.ceil(scaledWidth * scale);
+        	}
+        } else {
+        	float scale = height / (float) scaledHeight;
+        	
+        	scaledHeight = height;
+        	scaledWidth = (int) Math.ceil(scaledWidth * scale);
+        	
+        	if (scaledWidth < width) {
+            	scale = width / (float) scaledWidth;
+            	
+            	scaledWidth = width;
+            	scaledHeight = (int) Math.ceil(scaledHeight * scale);        	
+        	}
+        }
+        
+        Bitmap bmp = Bitmap.createScaledBitmap(bitmap,
+                scaledWidth, scaledHeight, false);
+
+        bitmap.recycle();
+        bitmap = null;
+        
+        int xDiff = bmp.getWidth() - width;
+        int yDiff = bmp.getHeight() - height;
+        Bitmap buff = Bitmap.createBitmap(width, height, Config.RGB_565);
+        Canvas canvas = new Canvas(buff);
+        canvas.drawBitmap(bmp, 0 - xDiff/2, 0 - yDiff/2, new Paint());
+        
+        bmp.recycle();
+        bmp = null;
+        
+        return buff; 
     }
     
     public static Bitmap getImageFromResource(Context context, int resId, int width, int height) {
         Resources resources = context.getResources();
-        
-        BitmapFactory.decodeResource(context.getResources(), R.drawable.default_image);
         
         //get the dimensions of the image
         BitmapFactory.Options opts = new BitmapFactory.Options();
@@ -560,13 +614,50 @@ public class TileView extends View {
         opts.inJustDecodeBounds = false;
         opts.inSampleSize = Math.max(opts.outWidth/width, opts.outHeight/height);
         
-        return Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.default_image, opts),
-                width, height, false);
+        int scaledWidth = opts.outWidth;
+        int scaledHeight = opts.outHeight;
+        
+        if (scaledWidth < scaledHeight) {
+        	float scale = width / (float) scaledWidth;
+        	
+        	scaledWidth = width;
+        	scaledHeight = (int) Math.ceil(scaledHeight * scale);        	
+        	if (scaledHeight < height) {
+            	scale = height / (float) scaledHeight;
+            	
+            	scaledHeight = height;
+            	scaledWidth = (int) Math.ceil(scaledWidth * scale);
+        	}
+        } else {
+        	float scale = height / (float) scaledHeight;
+        	
+        	scaledHeight = height;
+        	scaledWidth = (int) Math.ceil(scaledWidth * scale);
+        	
+        	if (scaledWidth < width) {
+            	scale = width / (float) scaledWidth;
+            	
+            	scaledWidth = width;
+            	scaledHeight = (int) Math.ceil(scaledHeight * scale);        	
+        	}
+        }
+        Bitmap bmp = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.default_image, opts),
+                scaledWidth, scaledHeight, false);
+        int xDiff = bmp.getWidth() - width;
+        int yDiff = bmp.getHeight() - height;
+        Bitmap buff = Bitmap.createBitmap(width, height, Config.RGB_565);
+        Canvas canvas = new Canvas(buff);
+        canvas.drawBitmap(bmp, 0 - xDiff/2, 0 - yDiff/2, new Paint());
+
+        bmp.recycle();
+        bmp = null;
+        
+        return buff; 
     }
     
     public boolean checkSolved() {
         if (DEBUG) {
-            Log.v(getClass().getName(), "mMisPlaced: " + mMisplaced);
+            Log.v(LOG_TAG, "mMisPlaced: " + mMisplaced);
         }
         
         if (mSolved) {
@@ -599,5 +690,6 @@ public class TileView extends View {
     
     public Bitmap getCurrentImage() {
     	return (mImageSource != SelectImagePreference.IMAGE_DEFAULT && mBitmap != null) ? mBitmap : mDefaultBitmap;
-    }
+    }    
 }
+

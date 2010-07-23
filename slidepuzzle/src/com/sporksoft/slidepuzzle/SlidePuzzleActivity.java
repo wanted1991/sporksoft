@@ -2,23 +2,20 @@ package com.sporksoft.slidepuzzle;
 
 import java.util.ArrayList;
 
-import com.qwapi.adclient.android.view.QWAdView;
+import com.sporksoft.slidepuzzle.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnCancelListener;
-import android.graphics.drawable.Drawable;
+import android.content.res.Configuration;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +26,7 @@ import android.view.WindowManager;
 import android.view.View.OnKeyListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.Animation.AnimationListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.Chronometer;
@@ -47,6 +45,19 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
 	private Chronometer mTimerView;
     private long mTime;
     private Toast mToast;
+
+    private AnimationListener mCompleteAnimListener = new AnimationListener() {
+		@Override
+		public void onAnimationEnd(Animation animation) {
+			mTileView.setVisibility(View.GONE);
+		}
+		
+		@Override
+		public void onAnimationRepeat(Animation animation) {}
+
+		@Override
+		public void onAnimationStart(Animation animation) {}
+	};
 
     private class ScoresListener implements OnClickListener {
         public void onClick(DialogInterface dialog, int whichButton ) {
@@ -136,6 +147,9 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
     	}    	
 
+	    int bgColor = prefs.getInt(PuzzlePreferenceActivity.BACKGROUND_COLOR, getResources().getColor(R.drawable.default_bg_color));
+	    findViewById(R.id.layout).setBackgroundColor(bgColor);
+
     	mTileView.updateInstantPrefs();
         mTimerView.setBase(SystemClock.elapsedRealtime() - mTime);
     	if (!mTileView.isSolved()) {
@@ -186,6 +200,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
             	mCompleteView.setVisibility(View.VISIBLE);
             	
             	Animation animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+            	animation.setAnimationListener(mCompleteAnimListener);
             	mCompleteView.startAnimation(animation);
             	
                 postScore();
@@ -236,6 +251,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
                 	mCompleteView.setVisibility(View.VISIBLE);
 
                 	Animation animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+                	animation.setAnimationListener(mCompleteAnimListener);
                 	mCompleteView.startAnimation(animation);
 
                 	postScore();
@@ -265,6 +281,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case MENU_NEW: {
+            	mTileView.setVisibility(View.VISIBLE);
             	mCompleteView.setVisibility(View.GONE);
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 int blankLoc = Integer.parseInt(prefs.getString(PuzzlePreferenceActivity.BLANK_LOCATION, String.valueOf(1)));
@@ -343,5 +360,10 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
         builder.setMessage(R.string.delete_dialog_msg);
 
         builder.show();
+    }
+    
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+    	super.onConfigurationChanged(newConfig);
     }
 }

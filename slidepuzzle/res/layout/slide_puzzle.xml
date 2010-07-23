@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:qwad="http://schemas.android.com/apk/res/com.sporksoft.slidepuzzle"
+    android:id="@+id/layout"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-        
+    android:layout_height="fill_parent"
+    android:background="@drawable/default_bg_color">
+
     <com.qwapi.adclient.android.view.QWAdView
         android:id="@+id/QWAd"
         android:layout_width="fill_parent" 
-        android:layout_height="wrap_content"
+        android:layout_height="51dip"
         qwad:siteId="SlidePuzzle-g4550xqc"
         qwad:publisherId="00a22af898d24dbdb2d977a83f04c589"
         qwad:mediaType="banner"
@@ -17,9 +19,10 @@
         qwad:renderAdOnCreate="true"
         qwad:placement="top"
         qwad:animation="slide"
-        qwad:bgColor="black"
+        qwad:bgColor="#00000000"
         qwad:defaultAdImage="@drawable/default_ad"
-        qwad:testMode="false"/>
+        qwad:testMode="false"
+        android:minHeight="51dip"/>
 
     <FrameLayout
         android:layout_width="fill_parent"
@@ -29,7 +32,15 @@
             android:id="@+id/tile_view"
             android:layout_width="fill_parent" 
             android:layout_height="fill_parent"
-            android:background="@drawable/default_bg_color"/>
+            android:background="#00000000"/>
+
+		<ImageView
+            android:id="@+id/complete_view"
+            android:layout_width="fill_parent" 
+            android:layout_height="fill_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            android:background="#00000000"/>		
         
         <Chronometer 
             android:id="@+id/timer_view"
@@ -46,12 +57,6 @@
             android:saveEnabled="true"
             android:padding="2px"
             android:gravity="center"/>
-
-		<ImageView
-            android:id="@+id/complete_view"
-            android:layout_width="fill_parent" 
-            android:layout_height="fill_parent"
-            android:scaleType="fitXY"
-            android:visibility="gone"/>		
     </FrameLayout>
 </LinearLayout>
+
