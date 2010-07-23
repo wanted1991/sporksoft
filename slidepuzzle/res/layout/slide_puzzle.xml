@@ -55,7 +55,7 @@
             android:shadowDy="1"
             android:shadowRadius="1"
             android:saveEnabled="true"
-            android:padding="2px"
+            android:padding="2dip"
             android:gravity="center"/>
     </FrameLayout>
 </LinearLayout>

@@ -15,6 +15,7 @@ import android.content.res.Configuration;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.os.Vibrator;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Menu;
@@ -100,12 +101,14 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-                
+        
         setContentView(R.layout.slide_puzzle);
-        mCompleteView = (ImageView) findViewById(R.id.complete_view);
         mTileView = (TileView) findViewById(R.id.tile_view);
         mTileView.requestFocus();
         mTileView.setOnKeyListener(this);
+
+        mCompleteView = (ImageView) findViewById(R.id.complete_view);
+        mCompleteView.setImageBitmap(mTileView.getCurrentImage());
         
         mTimerView = (Chronometer) findViewById(R.id.timer_view);
 
