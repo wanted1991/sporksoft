@@ -1,16 +1,11 @@
 package com.sporksoft.slidepuzzle;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.os.SystemClock;
 
 public class PuzzlePreferenceActivity extends PreferenceActivity {
 	final static int REQUEST_CODE_LOAD_IMAGE = 1;

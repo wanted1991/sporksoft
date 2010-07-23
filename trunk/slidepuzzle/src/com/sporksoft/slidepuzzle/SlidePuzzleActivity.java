@@ -15,7 +15,6 @@ import android.content.res.Configuration;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.os.Vibrator;
-import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Menu;
