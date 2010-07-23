@@ -58,7 +58,6 @@ public class TileView extends View {
 	boolean mShowOutlines;
 	boolean mShowImage;
 	Bitmap mBitmap;
-	Bitmap mDefaultBitmap;
 	int mNumberSize;
 	
 	SharedPreferences mPrefs;
@@ -113,7 +112,7 @@ public class TileView extends View {
 	    
 	    requestLayout();
 	}
-
+    
     @Override 
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -121,30 +120,22 @@ public class TileView extends View {
         int w = getMeasuredWidth();
         int h = getMeasuredHeight();
         Context context = getContext();
-        if (w > 0 && h > 0) {
-        	if (mDefaultBitmap != null) {
-        		mDefaultBitmap.recycle();
-        		mDefaultBitmap = null;
-        	}
-            mDefaultBitmap = getImageFromResource(context, R.drawable.default_image, w, h);
-            mImageSource = mPrefs.getInt(PuzzlePreferenceActivity.IMAGE_SOURCE, 1);
-            if (mImageSource == SelectImagePreference.IMAGE_CUSTOM ) {
-            	if (mBitmap != null) {
-            		mBitmap.recycle();
-            		mBitmap = null;
-            	}
-                mBitmap = getImageFromUri(context, 
-                        Uri.parse(mPrefs.getString(PuzzlePreferenceActivity.CUSTOM_PUZZLE_IMAGE, "")),
-                        w, h);
-            } else if (mImageSource == SelectImagePreference.IMAGE_RANDOM) {
-            	if (mBitmap != null) {
-            		mBitmap.recycle();
-            		mBitmap = null;
-            	}
-                mBitmap = getImageFromUri(context, 
-                        Uri.parse(mPrefs.getString(PuzzlePreferenceActivity.RANDOM_PUZZLE_IMAGE, "")),
-                        w, h);
-            }
+
+        if (w <= 0 || h <= 0) {
+        	return;
+        }
+
+        mImageSource = mPrefs.getInt(PuzzlePreferenceActivity.IMAGE_SOURCE, 1);
+        if (mImageSource == SelectImagePreference.IMAGE_CUSTOM ) {
+            mBitmap = getImageFromUri(context, 
+                    Uri.parse(mPrefs.getString(PuzzlePreferenceActivity.CUSTOM_PUZZLE_IMAGE, "")),
+                    w, h);
+        } else if (mImageSource == SelectImagePreference.IMAGE_RANDOM) {
+            mBitmap = getImageFromUri(context, 
+                    Uri.parse(mPrefs.getString(PuzzlePreferenceActivity.RANDOM_PUZZLE_IMAGE, "")),
+                    w, h);
+        } else {
+            mBitmap = getImageFromResource(context, R.drawable.default_image, w, h);
         }
     }
  
@@ -158,14 +149,10 @@ public class TileView extends View {
         if (tiles == null) {
             if (mImageSource == SelectImagePreference.IMAGE_RANDOM) {
                 SelectImagePreference.saveRandomImagePreference(getContext(), SelectImagePreference.getRandomImage(getContext().getContentResolver()));
-                if (mBitmap != null) {
-                	mBitmap.recycle();
-                	mBitmap = null;
-                }
                 mBitmap = getImageFromUri(getContext(), 
                         Uri.parse(mPrefs.getString(PuzzlePreferenceActivity.RANDOM_PUZZLE_IMAGE, "")),
                         getWidth(), getHeight());                
-            }
+            } 
             if (DEBUG) {
                 Log.v(LOG_TAG, "Image Source: " + mPrefs.getInt(PuzzlePreferenceActivity.IMAGE_SOURCE, 0));
                 Log.v(LOG_TAG, "Rand File: " + mPrefs.getString(PuzzlePreferenceActivity.RANDOM_PUZZLE_IMAGE, ""));
@@ -236,7 +223,23 @@ public class TileView extends View {
 	}
 		
     @Override
-    protected void onDraw(Canvas canvas) {       
+    protected void onDraw(Canvas canvas) {
+    	if (mBitmap == null || mBitmap.isRecycled()) {
+            if (mImageSource == SelectImagePreference.IMAGE_CUSTOM ) {
+                mBitmap = getImageFromUri(getContext(), 
+                        Uri.parse(mPrefs.getString(PuzzlePreferenceActivity.CUSTOM_PUZZLE_IMAGE, "")),
+                        getWidth(), getHeight());
+            } else if (mImageSource == SelectImagePreference.IMAGE_RANDOM) {
+                mBitmap = getImageFromUri(getContext(), 
+                        Uri.parse(mPrefs.getString(PuzzlePreferenceActivity.RANDOM_PUZZLE_IMAGE, "")),
+                        getWidth(), getHeight());
+            } else {
+                mBitmap = getImageFromResource(getContext(), R.drawable.default_image, 
+                		getWidth(), getHeight());
+            }
+
+    	}
+    	
 		float tileWidth = getTileWidth();
 		float tileHeight = getTileHeight();
 						
@@ -268,15 +271,14 @@ public class TileView extends View {
 			}
 			
 			//Draw the image			
-			if (mShowImage) {    
-    			Bitmap toDraw = getCurrentImage();
+			if (mShowImage) {
                 int tileNumber = mTiles[index].mNumber;
                 int xSrc = (int)((tileNumber % mSize) * tileWidth);
                 int ySrc = (int)((tileNumber / mSize) * tileHeight);
                 Rect src = new Rect(xSrc, ySrc, (int) (xSrc + tileWidth), (int) (ySrc + tileHeight));
                 Rect dst = new Rect((int) x, (int) y, (int) (x + tileWidth), (int) (y + tileHeight));
                  
-                canvas.drawBitmap(toDraw, src, dst, mPaint);
+                canvas.drawBitmap(mBitmap, src, dst, mPaint);
             } else {
                 mPaint.setColor(mTiles[index].mColor);
                 canvas.drawRect(x, y, x + tileWidth, y + tileHeight, mPaint);
@@ -550,7 +552,9 @@ public class TileView extends View {
         // get the image and scale it appropriately
         opts.inJustDecodeBounds = false;
         opts.inSampleSize = Math.max(opts.outWidth/width, opts.outHeight/height);
-
+        opts.outWidth /= opts.inSampleSize;
+        opts.outHeight /= opts.inSampleSize;
+        
         Bitmap bitmap = BitmapFactory.decodeFileDescriptor(pfd.getFileDescriptor(), null, opts);
         if (bitmap == null) {
             return null;
@@ -689,7 +693,6 @@ public class TileView extends View {
     }
     
     public Bitmap getCurrentImage() {
-    	return (mImageSource != SelectImagePreference.IMAGE_DEFAULT && mBitmap != null) ? mBitmap : mDefaultBitmap;
+    	return mBitmap;
     }    
 }
-
