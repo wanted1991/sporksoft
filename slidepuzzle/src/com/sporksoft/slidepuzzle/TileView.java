@@ -562,8 +562,6 @@ public class TileView extends View {
         // get the image and scale it appropriately
         opts.inJustDecodeBounds = false;
         opts.inSampleSize = Math.max(opts.outWidth/width, opts.outHeight/height);
-        opts.outWidth /= opts.inSampleSize;
-        opts.outHeight /= opts.inSampleSize;
         
         Bitmap bitmap = BitmapFactory.decodeFileDescriptor(pfd.getFileDescriptor(), null, opts);
         if (bitmap == null) {
