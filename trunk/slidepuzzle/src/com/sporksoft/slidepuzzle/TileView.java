@@ -14,7 +14,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.Bitmap.Config;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
@@ -134,9 +133,14 @@ public class TileView extends View {
             mBitmap = getImageFromUri(context, 
                     Uri.parse(mPrefs.getString(PuzzlePreferenceActivity.RANDOM_PUZZLE_IMAGE, "")),
                     w, h);
-        } else {
-            mBitmap = getImageFromResource(context, R.drawable.default_image, w, h);
+        } else if (mImageSource == SelectImagePreference.IMAGE_DEFAULT) {
+            mBitmap = getImageFromResource(getContext(), R.drawable.default_image, 
+            		w, h);        	
         }
+        if (mBitmap == null || mBitmap.isRecycled()) {
+            mBitmap = getImageFromResource(getContext(), R.drawable.default_image, 
+            		w, h);
+    	}
     }
  
 	public void newGame(Tile[] tiles, int blankLocation, Chronometer chronometer) {
@@ -225,6 +229,7 @@ public class TileView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
     	if (mBitmap == null || mBitmap.isRecycled()) {
+            mImageSource = mPrefs.getInt(PuzzlePreferenceActivity.IMAGE_SOURCE, 1);
             if (mImageSource == SelectImagePreference.IMAGE_CUSTOM ) {
                 mBitmap = getImageFromUri(getContext(), 
                         Uri.parse(mPrefs.getString(PuzzlePreferenceActivity.CUSTOM_PUZZLE_IMAGE, "")),
@@ -233,11 +238,14 @@ public class TileView extends View {
                 mBitmap = getImageFromUri(getContext(), 
                         Uri.parse(mPrefs.getString(PuzzlePreferenceActivity.RANDOM_PUZZLE_IMAGE, "")),
                         getWidth(), getHeight());
-            } else {
-                mBitmap = getImageFromResource(getContext(), R.drawable.default_image, 
-                		getWidth(), getHeight());
+            } else if (mImageSource == SelectImagePreference.IMAGE_DEFAULT) {
+            	mBitmap = getImageFromResource(getContext(), R.drawable.default_image, 
+            		getWidth(), getHeight());        	
             }
-
+    	}
+    	if (mBitmap == null || mBitmap.isRecycled()) { 
+            mBitmap = getImageFromResource(getContext(), R.drawable.default_image, 
+            		getWidth(), getHeight());
     	}
     	
 		float tileWidth = getTileWidth();
@@ -272,9 +280,11 @@ public class TileView extends View {
 			
 			//Draw the image			
 			if (mShowImage) {
+				int xCropOffset = (mBitmap.getWidth()-getWidth())/2;
+				int yCropOffset =  (mBitmap.getHeight()-getHeight())/2;
                 int tileNumber = mTiles[index].mNumber;
-                int xSrc = (int)((tileNumber % mSize) * tileWidth);
-                int ySrc = (int)((tileNumber / mSize) * tileHeight);
+                int xSrc = (int)((tileNumber % mSize) * tileWidth) + xCropOffset;
+                int ySrc = (int)((tileNumber / mSize) * tileHeight) + yCropOffset;
                 Rect src = new Rect(xSrc, ySrc, (int) (xSrc + tileWidth), (int) (ySrc + tileHeight));
                 Rect dst = new Rect((int) x, (int) y, (int) (x + tileWidth), (int) (y + tileHeight));
                  
@@ -587,23 +597,30 @@ public class TileView extends View {
             	scaledHeight = (int) Math.ceil(scaledHeight * scale);        	
         	}
         }
-        
+
+        //Matrix matrix = new Matrix();
+        //matrix.postScale(scaledWidth, scaledHeight);
+        //matrix.postTranslate(scaledWidth/2, scaledHeight/2);
+      
+        //Bitmap bmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+        //		bitmap.getHeight(), matrix, true);
         Bitmap bmp = Bitmap.createScaledBitmap(bitmap,
                 scaledWidth, scaledHeight, false);
 
         bitmap.recycle();
         bitmap = null;
         
-        int xDiff = bmp.getWidth() - width;
-        int yDiff = bmp.getHeight() - height;
-        Bitmap buff = Bitmap.createBitmap(width, height, Config.RGB_565);
-        Canvas canvas = new Canvas(buff);
-        canvas.drawBitmap(bmp, 0 - xDiff/2, 0 - yDiff/2, new Paint());
+        return bmp;
+        //int xDiff = bmp.getWidth() - width;
+        //int yDiff = bmp.getHeight() - height;
+        //Bitmap buff = Bitmap.createBitmap(width, height, Config.RGB_565);
+        //Canvas canvas = new Canvas(buff);
+        //canvas.drawBitmap(bmp, 0 - xDiff/2, 0 - yDiff/2, new Paint());
         
-        bmp.recycle();
-        bmp = null;
+        //bmp.recycle();
+        //bmp = null;
         
-        return buff; 
+        //return buff; 
     }
     
     public static Bitmap getImageFromResource(Context context, int resId, int width, int height) {
@@ -645,18 +662,19 @@ public class TileView extends View {
             	scaledHeight = (int) Math.ceil(scaledHeight * scale);        	
         	}
         }
-        Bitmap bmp = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.default_image, opts),
+        return Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.default_image, opts),
                 scaledWidth, scaledHeight, false);
-        int xDiff = bmp.getWidth() - width;
-        int yDiff = bmp.getHeight() - height;
-        Bitmap buff = Bitmap.createBitmap(width, height, Config.RGB_565);
-        Canvas canvas = new Canvas(buff);
-        canvas.drawBitmap(bmp, 0 - xDiff/2, 0 - yDiff/2, new Paint());
-
-        bmp.recycle();
-        bmp = null;
         
-        return buff; 
+        //int xDiff = bmp.getWidth() - width;
+        //int yDiff = bmp.getHeight() - height;
+        //Bitmap buff = Bitmap.createBitmap(width, height, Config.RGB_565);
+        //Canvas canvas = new Canvas(buff);
+        //canvas.drawBitmap(bmp, 0 - xDiff/2, 0 - yDiff/2, new Paint());
+
+        //bmp.recycle();
+        //bmp = null;
+        
+        //return buff; 
     }
     
     public boolean checkSolved() {
@@ -694,5 +712,5 @@ public class TileView extends View {
     
     public Bitmap getCurrentImage() {
     	return mBitmap;
-    }    
+    }
 }
