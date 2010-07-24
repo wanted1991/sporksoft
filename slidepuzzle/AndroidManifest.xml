@@ -2,9 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sporksoft.slidepuzzle"
     android:versionName="1.6.2"
-    android:versionCode="162">
+    android:versionCode="162"
+    android:installLocation="auto">
 
-    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="4"/>
+    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="8"/>
     <supports-screens/>
 
     <uses-permission android:name="android.permission.VIBRATE" />
