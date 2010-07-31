@@ -6,12 +6,15 @@ import com.sporksoft.slidepuzzle.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.res.Configuration;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.os.Vibrator;
@@ -35,7 +38,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class SlidePuzzleActivity extends Activity implements OnKeyListener {	
+public class SlidePuzzleActivity extends Activity implements OnKeyListener {
+	private static final String LOG_TAG = SlidePuzzleActivity.class.getName();
+	
 	private static final int MENU_NEW = 0;
 	private static final int MENU_SCORES = 1;
 	private static final int MENU_SETTINGS = 2;
@@ -45,7 +50,12 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
 	private Chronometer mTimerView;
     private long mTime;
     private Toast mToast;
-
+    
+    private SoundPool mSoundPool;
+    private int mClickSound;
+    private int mApplauseSound;
+    private boolean mSoundOn;
+    
     private AnimationListener mCompleteAnimListener = new AnimationListener() {
 		@Override
 		public void onAnimationEnd(Animation animation) {
@@ -105,7 +115,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
         mTileView = (TileView) findViewById(R.id.tile_view);
         mTileView.requestFocus();
         mTileView.setOnKeyListener(this);
-
+        
         mCompleteView = (ImageView) findViewById(R.id.complete_view);
         mCompleteView.setImageBitmap(mTileView.getCurrentImage());
         
@@ -113,7 +123,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         mTimerView.setTextColor(prefs.getInt(PuzzlePreferenceActivity.TIMER_COLOR, getResources().getColor(R.drawable.default_fg_color)));
-                
+        
         if (icicle == null) {
             int blankLoc = Integer.parseInt(prefs.getString(PuzzlePreferenceActivity.BLANK_LOCATION, String.valueOf(1)));
             mTileView.newGame(null, blankLoc, mTimerView);
@@ -133,8 +143,11 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
             mTileView.newGame(tiles, icicle.getInt("blank_first"), mTimerView);
             mTime = icicle.getLong("time", 0);
         }
+        mSoundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
+        mClickSound = mSoundPool.load(this, R.raw.click, 1);
+        mApplauseSound = mSoundPool.load(this, R.raw.applause, 1);
         
-       com.qwapi.adclient.android.AdApiRegistration.registerApplication(this); 
+        com.qwapi.adclient.android.AdApiRegistration.registerApplication(this); 
     }
     
     @Override
@@ -142,6 +155,7 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
     	super.onResume();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mSoundOn = prefs.getBoolean(PuzzlePreferenceActivity.SOUND_ON, true);
 
     	if (prefs.getBoolean(PuzzlePreferenceActivity.SHOW_STATUS, true)) {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);       	    
@@ -197,6 +211,8 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
                     return false;
             }
 
+            playSound(mClickSound);
+
             if (mTileView.checkSolved()) {
             	mCompleteView.setImageBitmap(mTileView.getCurrentImage());
             	mCompleteView.setVisibility(View.VISIBLE);
@@ -221,11 +237,13 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
         
         boolean isHighScore = ScoreUtil.getInstance(this).updateScores(mTime, mTileView.mSize);
         if (isHighScore) {
-            mToast = Toast.makeText(this, R.string.new_high_score, Toast.LENGTH_SHORT);
+        	playSound(mApplauseSound);
+            
+            mToast = Toast.makeText(this, R.string.new_high_score, Toast.LENGTH_LONG);
             mToast.setGravity(Gravity.CENTER, 0, 0);
             mToast.show();
         }    
-        ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(25);
+        ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(50);
     }
 
     @Override public boolean onTouchEvent(MotionEvent event) {
@@ -248,6 +266,9 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
             }
             case MotionEvent.ACTION_UP: {
             	mTileView.dropTile(event.getX(), event.getY());
+            	
+            	playSound(mClickSound);
+            	
                 if (mTileView.checkSolved()) {
                 	mCompleteView.setImageBitmap(mTileView.getCurrentImage());
                 	mCompleteView.setVisibility(View.VISIBLE);
@@ -367,5 +388,15 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
     	super.onConfigurationChanged(newConfig);
+    }
+    
+    private void playSound(int sound) {
+    	if (!mSoundOn) {
+    		return;
+    	}
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);  
+        int streamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC); 
+        
+        mSoundPool.play(sound, streamVolume, streamVolume, 1, 0, 1f);
     }
 }
