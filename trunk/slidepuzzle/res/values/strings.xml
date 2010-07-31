@@ -70,4 +70,6 @@
     <string name="pref_title_bg_color">Background color</string>
     <string name="pref_summary_bg_color">Select color for background</string> 
 
+    <string name="pref_title_sound_on">Play sounds</string>
+    <string name="pref_summary_sound_on">Toggle sound effects</string> 
 </resources>
