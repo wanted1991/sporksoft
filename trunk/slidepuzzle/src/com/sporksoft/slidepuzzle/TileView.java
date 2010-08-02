@@ -363,10 +363,10 @@ public class TileView extends View {
     		index != mEmptyIndex;
     }
     
-    public void move(int dir) {
+    public boolean move(int dir) {
         //prevent movement via dpad/trackball during touch
         if (mSelected >= 0) {
-            return;
+            return false;
         }
         
     	int index;
@@ -375,27 +375,32 @@ public class TileView extends View {
     			index = mEmptyIndex + mSize;
     			if ((index) < mSizeSqr) {
     				update(index);
+    				return true;
     			}
-    			break;
+    			return false;
     		case DIR_DOWN:
     			index = mEmptyIndex - mSize;
     			if ((index) >= 0) {
     				update(index);
+       				return true;
     			}
-    			break;
+    			return false;
     		case DIR_LEFT:
     			index = mEmptyIndex + 1;
     			if ((index % mSize) != 0 ) {
     				update(index);
+       				return true;
     			}
-    			break;
+    			return false;
     		case DIR_RIGHT:
     			index = mEmptyIndex - 1;
     			if ((mEmptyIndex % mSize) != 0) {
     				update(index);
-    			}
-    			break;
+       				return true;
+     			}
+    			return false;
     	}
+    	return false;
     }
     
     private void redrawRow() {
@@ -477,7 +482,7 @@ public class TileView extends View {
         }
     }
     
-    public void dropTile(float x, float y) {
+    public boolean dropTile(float x, float y) {
         if (DEBUG) {    	
             Log.v(LOG_TAG, "Drop: " + mSelected + " at (" + x + ", " + y + ")");
         }
@@ -485,12 +490,15 @@ public class TileView extends View {
     	if (mSelected != -1 && (Math.abs(mOffsetX) > getTileWidth()/2 ||
     			Math.abs(mOffsetY) > getTileHeight()/2)) {   
     		update(mSelected);
+        	mSelected = -1;
+        	return true;
     	} else if (mSelected % mSize == mEmptyIndex % mSize) {
             redrawColumn();
         } else if (mSelected / mSize == mEmptyIndex / mSize) {
             redrawRow();
         }
     	mSelected = -1;
+    	return false;
     }
     
     public void dragTile(float x, float y) {
