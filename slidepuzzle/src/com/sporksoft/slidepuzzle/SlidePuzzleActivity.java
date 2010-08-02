@@ -2,6 +2,7 @@ package com.sporksoft.slidepuzzle;
 
 import java.util.ArrayList;
 
+import com.adwhirl.AdWhirlLayout;
 import com.sporksoft.slidepuzzle.R;
 
 import android.app.Activity;
@@ -36,6 +37,7 @@ import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 public class SlidePuzzleActivity extends Activity implements OnKeyListener {
@@ -143,11 +145,15 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
             mTileView.newGame(tiles, icicle.getInt("blank_first"), mTimerView);
             mTime = icicle.getLong("time", 0);
         }
+        
+        AdWhirlLayout adWhirlLayout = new AdWhirlLayout(this, "536fe2be21424e96b7e4f5b3fc90e266");
+        adWhirlLayout.setBackgroundColor(0x00000000);
+    	RelativeLayout.LayoutParams adWhirlLayoutParams = new RelativeLayout.LayoutParams(-1, -1);
+    	((LinearLayout)(findViewById(R.id.ad_layout))).addView(adWhirlLayout, adWhirlLayoutParams);	
+
         mSoundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
         mClickSound = mSoundPool.load(this, R.raw.click, 1);
-        mApplauseSound = mSoundPool.load(this, R.raw.applause, 1);
-        
-        com.qwapi.adclient.android.AdApiRegistration.registerApplication(this); 
+        mApplauseSound = mSoundPool.load(this, R.raw.applause, 1);     
     }
     
     @Override
@@ -189,29 +195,32 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
             return false;
         }
         
+        boolean moved;
     	if (event.getAction() == KeyEvent.ACTION_DOWN) {
             switch (keyCode) {
                 case KeyEvent.KEYCODE_DPAD_DOWN: {
-                	mTileView.move(TileView.DIR_DOWN);
+                	moved = mTileView.move(TileView.DIR_DOWN);
                     break;
                 }
                 case KeyEvent.KEYCODE_DPAD_UP: {
-                	mTileView.move(TileView.DIR_UP);
+                	moved = mTileView.move(TileView.DIR_UP);
                     break;
                 }
                 case KeyEvent.KEYCODE_DPAD_LEFT: {
-                	mTileView.move(TileView.DIR_LEFT);
+                	moved = mTileView.move(TileView.DIR_LEFT);
                     break;
                 }
                 case KeyEvent.KEYCODE_DPAD_RIGHT: {
-                	mTileView.move(TileView.DIR_RIGHT);
+                	moved = mTileView.move(TileView.DIR_RIGHT);
                     break;
                 }
                 default:
                     return false;
             }
 
-            playSound(mClickSound);
+            if (moved) {
+            	playSound(mClickSound);
+            }
 
             if (mTileView.checkSolved()) {
             	mCompleteView.setImageBitmap(mTileView.getCurrentImage());
@@ -265,9 +274,11 @@ public class SlidePuzzleActivity extends Activity implements OnKeyListener {
             	return true;
             }
             case MotionEvent.ACTION_UP: {
-            	mTileView.dropTile(event.getX(), event.getY());
+            	boolean moved = mTileView.dropTile(event.getX(), event.getY());
             	
-            	playSound(mClickSound);
+            	if (moved) {
+            		playSound(mClickSound);
+            	}
             	
                 if (mTileView.checkSolved()) {
                 	mCompleteView.setImageBitmap(mTileView.getCurrentImage());
