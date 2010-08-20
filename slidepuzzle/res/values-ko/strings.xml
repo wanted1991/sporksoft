@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--  translated by ubinuri -->
+<!-- Translated by ubinuri -->
 <resources>
     <string name="app_name">Slide Puzzle Pro</string>    
     
@@ -29,7 +29,7 @@
     <string name="menu_restore_defaults">복원 기본 설정</string>
 
     <string name="pref_title_show_statusbar">상태 바 보기</string>
-    <string name="pref_summary_show_statusbar">상태 바 표시Display the status bar</string>
+    <string name="pref_summary_show_statusbar">상태 바 표시</string>
 
     <string name="pref_title_show_timer">타이머 보기</string>
     <string name="pref_summary_show_timer">경과된 게임 시간 표시</string>
